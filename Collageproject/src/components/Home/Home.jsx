@@ -1,7 +1,7 @@
 import AdviceCards from "./Cards";
 import ActionCard from "./Cards";
 import HeroSection from "./Cards";
-import Hero from "./hero";
+import Hero from "./Hero";
 import SeniorGuide from "./Seniorguide";
 import Workcards from "./Workcards";
 
