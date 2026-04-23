@@ -100,39 +100,8 @@ function SeniorGuideDashboard() {
 
 }, [navigate]);
 
-  useEffect(() => {
-const loadDashboardData = async () => {
-
-  try {
-
-    const profileRes = await getMyProfile();
-    const statsRes = await getGuideStats();
-    const walletRes = await getWalletBalance();
-    console.log(profileRes.data,statsRes.data,walletRes.data)
-
-    setData({
-      name: "Senior Guide",
-
-      total_sessions: statsRes.data.total_calls,
-
-      wallet_balance: walletRes.data.available_balance,
-
-      rating: statsRes.data.rating,
-
-      students: statsRes.data.students
-    });
-
-  } catch (err) {
-
-    console.error("Dashboard load failed:", err);
-
-  }
-
-};
-
-  loadDashboardData();
-
-}, [navigate]);
+  
+      
   // ⏳ loading state
   if (!data) {
 
