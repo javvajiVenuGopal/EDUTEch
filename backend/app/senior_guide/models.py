@@ -30,7 +30,7 @@ class SeniorGuide(Base):
     pending_withdrawal = Column(Integer, default=0)
     created_at = Column(DateTime, default=datetime.utcnow)
     referral_code = Column(String, unique=True, nullable=True)
-    referred_by = Column(String, nullable=True)
+    referred_by = Column(Integer, nullable=True)
     referral_bonus = Column(Integer, default=0)
     referral_paid = Column(Boolean, default=False)
 
