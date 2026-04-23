@@ -1,7 +1,7 @@
 import axios from "axios";
 import toast from "react-hot-toast";
 const axiosInstance = axios.create({
-  baseURL: "https://c5a3-2409-40f0-6050-7870-2d8a-5bf0-50b4-48a4.ngrok-free.app/",
+  baseURL: "https://edutech-k9zs.onrender.com/",
 });
 
 /* =========================
