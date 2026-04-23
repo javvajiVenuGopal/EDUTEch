@@ -48,3 +48,9 @@ urllib3==2.6.3
 uvicorn==0.42.0
 wrapt==2.1.2
 python-jose[cryptography]
+python-jose[cryptography]
+passlib[bcrypt]
+python-multipart
+email-validator
+aiofiles
+websockets
