@@ -11,7 +11,7 @@ export const connectIncomingCallSocket = (
   }
 
   const wsURL =
-    `${BASEURL.replace("https", "ws")}/call/ws/call/${Number(userId)}`;
+    `${BASEURL.replace("http", "ws")}/call/ws/call/${Number(userId)}`;
 
   console.log("🔌 connecting socket:", wsURL);
 
