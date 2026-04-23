@@ -40,7 +40,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origin_regex="https://.*ngrok-free.app",
+    allow_origin_regex="https://.*onrender.com",
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
