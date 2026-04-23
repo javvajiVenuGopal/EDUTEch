@@ -450,7 +450,7 @@ def referrals(user=Depends(get_current_user), db: Session = Depends(get_db)):
     ).first()
 
     referrals = db.query(SeniorGuide).filter(
-        SeniorGuide.referred_by == guide.id
+        SeniorGuide.referred_by == str(guide.id)
     ).all()
 
     return {
@@ -472,7 +472,7 @@ def referral_list(user=Depends(get_current_user), db: Session = Depends(get_db))
     ).first()
 
     return db.query(SeniorGuide).filter(
-        SeniorGuide.referred_by == guide.id
+        SeniorGuide.referred_by == str(guide.id)
     ).all()
 
 # FIRST this route
