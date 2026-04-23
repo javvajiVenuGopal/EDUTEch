@@ -38,9 +38,14 @@ app = FastAPI(title="Exameets")
 from fastapi.middleware.cors import CORSMiddleware
 
 
+origins = [
+    "http://localhost:5173",
+    "https://edutech-1-b374.onrender.com"
+]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origin_regex="https://.*onrender.com",
+    allow_origins=origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
