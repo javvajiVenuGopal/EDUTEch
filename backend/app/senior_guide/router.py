@@ -1,0 +1,540 @@
+import asyncio
+from typing import Optional
+from app.wallet.models import Referral, WalletTransaction
+from app.booking.models import Booking
+from fastapi import APIRouter, Depends, HTTPException, Query, UploadFile, File, Form,BackgroundTasks
+from sqlalchemy.orm import Session
+from datetime import datetime
+
+from app.auth.models import User
+from app.core.database import get_db
+from app.senior_guide.models import GuideSlot, SeniorGuide
+from app.auth.utils import get_current_user
+from app.senior_guide.schemas import TestSubmitSchema
+from app.services.file_upload import save_file
+from app.notifications.service import create_notification
+
+
+router = APIRouter(prefix="/guides", tags=["Senior Guides"])
+
+
+# ---------------------------------------------------
+# APPLY AS SENIOR GUIDE
+# ---------------------------------------------------
+@router.post("/apply")
+def apply_guide(  background_tasks: BackgroundTasks,
+    college_name: str = Form(...),
+    branch: str = Form(...),
+    year_of_study: str = Form(...),
+    aadhaar_number: str = Form(...),
+    referral_code: Optional[str] = Form(None),
+
+    aadhaar: UploadFile = File(...),
+    college_id: UploadFile = File(...),
+    hall_ticket: UploadFile = File(...),
+
+    user=Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+
+    # Only seekers can apply
+    if user["role"] != "seeker":
+        raise HTTPException(403, "Only seekers can apply")
+
+    # Aadhaar validation
+    if not aadhaar_number.isdigit() or len(aadhaar_number) != 12:
+        raise HTTPException(400, "Invalid Aadhaar number")
+
+    # Check existing application
+    existing = db.query(SeniorGuide).filter(
+        SeniorGuide.user_id == user["user_id"]
+    ).first()
+
+    if existing and existing.status != "REJECTED":
+        return {
+            "message": "Application already submitted",
+            "status": existing.status
+        }
+
+    # ================= REFERRAL VALIDATION =================
+
+    referrer = None
+
+    if referral_code:
+
+        referrer = db.query(SeniorGuide).filter(
+            SeniorGuide.referral_code == referral_code
+        ).first()
+
+        if not referrer:
+            raise HTTPException(400, "Invalid referral code")
+
+        # prevent self referral
+        if referrer.user_id == user["user_id"]:
+            raise HTTPException(400, "Cannot use your own referral code")
+
+        # prevent duplicate referral usage
+        already_used = db.query(Referral).filter(
+            Referral.referred_user_id == user["user_id"],
+            Referral.status.in_(["PENDING", "APPROVED"])
+        ).first()
+
+        if already_used:
+            raise HTTPException(400, "Referral already applied")
+
+    # ================= SAVE FILES =================
+
+    aadhaar_path = save_file(aadhaar, "aadhaar")
+    college_path = save_file(college_id, "college_id")
+    hall_path = save_file(hall_ticket, "hall_ticket")
+
+    # ================= CREATE GUIDE =================
+
+    guide = SeniorGuide(
+        user_id=user["user_id"],
+        college_name=college_name,
+        branch=branch,
+        year_of_study=year_of_study,
+        aadhaar_number=aadhaar_number,
+        aadhaar_path=aadhaar_path,
+        college_id_card_path=college_path,
+        hall_ticket_path=hall_path,
+        referred_by=referrer.id if referrer else None,
+        referral_paid=False,
+        status="PENDING_VERIFICATION",
+        attempts=0,
+        created_at=datetime.utcnow()
+    )
+
+    db.add(guide)
+
+    # ================= CREATE REFERRAL RECORD =================
+
+    if referrer:
+
+        referral = Referral(
+            referrer_id=referrer.id,
+            referred_user_id=user["user_id"],
+            amount=25,
+            status="PENDING"
+        )
+
+        db.add(referral)
+
+    # ================= COMMIT ONCE =================
+
+    db.commit()
+    db.refresh(guide)
+
+    # ================= CREATE NOTIFICATION =================
+
+    background_tasks.add_task(
+    create_notification,
+        db,
+        user["user_id"],
+        "Application Submitted",
+        "Your guide application submitted successfully"
+    
+)
+
+    return {
+        "message": "Documents submitted successfully",
+        "status": guide.status
+    }
+
+
+# ---------------------------------------------------
+# TEST QUESTIONS
+# ---------------------------------------------------
+QUESTIONS = [
+    {"id": 1, "question": "Placement percentage?", "answer": "80"},
+    {"id": 2, "question": "Hostel available?", "answer": "yes"},
+    {"id": 3, "question": "Attendance strict?", "answer": "yes"},
+]
+
+
+# ---------------------------------------------------
+# GET TEST QUESTIONS
+# ---------------------------------------------------
+@router.get("/test/questions")
+def get_questions(user=Depends(get_current_user), db: Session = Depends(get_db)):
+
+    guide = db.query(SeniorGuide).filter(
+        SeniorGuide.user_id == user["user_id"]
+    ).first()
+
+    if not guide:
+        raise HTTPException(404, "Guide not found")
+
+    if guide.status != "ELIGIBLE_TEST":
+        raise HTTPException(400, "Not eligible")
+
+    return [{"id": q["id"], "question": q["question"]} for q in QUESTIONS]
+
+
+# ---------------------------------------------------
+# SUBMIT TEST
+# ---------------------------------------------------
+@router.post("/test/submit")
+def submit_test(  background_tasks: BackgroundTasks,
+    data: TestSubmitSchema,
+    user=Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+
+    guide = db.query(SeniorGuide).filter(
+        SeniorGuide.user_id == user["user_id"]
+    ).first()
+
+    if not guide:
+        raise HTTPException(404, "Guide not found")
+
+    if guide.status == "ACTIVE":
+        raise HTTPException(400, "Already passed")
+
+    if guide.status == "REJECTED":
+        raise HTTPException(400, "Attempts exhausted")
+
+    if guide.status != "ELIGIBLE_TEST":
+        raise HTTPException(400, "Not eligible")
+
+    guide.attempts += 1
+
+    answers = {
+        "1": data.q1,
+        "2": data.q2,
+        "3": data.q3
+    }
+
+    score = sum(
+        1 for q in QUESTIONS
+        if answers[str(q["id"])].strip().lower() == q["answer"]
+    )
+
+    percentage = (score / len(QUESTIONS)) * 100
+    guide.test_score = percentage
+
+    if percentage >= 60:
+
+        guide.status = "ACTIVE"
+
+        if not guide.unique_id:
+            guide.unique_id = f"SG-{1000 + guide.id}"
+
+        if not guide.referral_code:
+            guide.referral_code = f"REF-SG-{guide.id}"
+
+        # initialize wallet only first time
+        if guide.wallet_balance is None:
+            guide.wallet_balance = 0
+
+        if guide.total_earned is None:
+            guide.total_earned = 0
+
+
+        user_obj = db.query(User).filter(
+            User.id == user["user_id"]
+        ).first()
+
+        if user_obj:
+            user_obj.role = "senior_guide"
+
+
+        # ================= REFERRAL AUTO CREDIT =================
+
+        if guide.referred_by and not guide.referral_paid:
+
+         
+
+            GUIDE_REWARD = 25
+            USER_REWARD = 50
+
+            referrer = db.query(SeniorGuide).filter(
+                SeniorGuide.id == guide.referred_by
+            ).first()
+
+            if referrer:
+
+                # credit referrer wallet
+                referrer.wallet_balance += GUIDE_REWARD
+                referrer.referral_bonus += GUIDE_REWARD
+
+                db.add(WalletTransaction(
+                    guide_id=referrer.id,
+                    amount=GUIDE_REWARD,
+                    type="credit",
+                    remark="Referral bonus earned"
+                ))
+
+                # credit new guide wallet
+                guide.wallet_balance += USER_REWARD
+
+                db.add(WalletTransaction(
+                    guide_id=guide.id,
+                    amount=USER_REWARD,
+                    type="credit",
+                    remark="Referral signup reward"
+                ))
+
+                # update referral table status
+                referral = db.query(Referral).filter(
+                    Referral.referred_user_id == guide.user_id,
+                    Referral.status == "PENDING"
+                ).first()
+
+                if referral:
+                    referral.status = "APPROVED"
+
+                # prevent duplicate future credits
+                guide.referral_paid = True
+                # 🔔 Notification for NEW GUIDE
+                background_tasks.add_task(
+                    create_notification,
+                        db,
+                        user["user_id"],
+                        "Referral Bonus Received",
+                        "₹50 credited to your wallet"
+                    
+                )
+
+                # 🔔 Notification for REFERRER GUIDE
+                background_tasks.add_task(
+                    create_notification,
+                        db,
+                        referrer.user_id,
+                        "Referral Bonus Earned",
+                        "₹25 credited to your wallet"
+                    
+                )
+        
+    elif guide.attempts >= 3:
+            guide.status = "REJECTED"
+
+    db.commit()
+    background_tasks.add_task(
+    create_notification,
+        db,
+        user["user_id"],
+        "Guide Activated",
+        "Congratulations! You are now an active senior guide"
+    
+)
+
+    return {
+        "score": percentage,
+        "status": guide.status,
+        "attempts": guide.attempts
+    }
+
+
+# ---------------------------------------------------
+# GUIDE PROFILE
+# ---------------------------------------------------
+@router.get("/profile")
+def get_profile(
+    user=Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+
+    guide = db.query(SeniorGuide).filter(
+        SeniorGuide.user_id == user["user_id"]
+    ).first()
+
+    # if guide not applied yet
+    if not guide:
+        return {
+            "status": "NOT_APPLIED"
+        }
+
+    return {
+        "unique_id": guide.unique_id,
+        "college_name": guide.college_name,
+        "branch": guide.branch,
+        "year_of_study": guide.year_of_study,
+        "rating": guide.rating,
+        "total_calls": guide.total_calls,
+        "status": guide.status
+    }
+
+
+# ---------------------------------------------------
+# UPDATE GUIDE PROFILE
+# ---------------------------------------------------
+@router.put("/profile/update")
+def update_profile(  background_tasks: BackgroundTasks,
+    branch: str = Form(...),
+    year_of_study: str = Form(...),
+    user=Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+
+    guide = db.query(SeniorGuide).filter(
+        SeniorGuide.user_id == user["user_id"]
+    ).first()
+
+    if not guide:
+        raise HTTPException(404, "Guide not found")
+
+    guide.branch = branch
+    guide.year_of_study = year_of_study
+
+    db.commit()
+    background_tasks.add_task(
+    create_notification,
+        db,
+        user["user_id"],
+        "Profile Updated",
+        "Your guide profile updated successfully"
+    
+)
+
+    return {"message": "Profile updated successfully"}
+
+
+# ---------------------------------------------------
+# DASHBOARD SUMMARY
+# ---------------------------------------------------
+@router.get("/dashboard")
+def dashboard(user=Depends(get_current_user), db: Session = Depends(get_db)):
+
+    guide = db.query(SeniorGuide).filter(
+        SeniorGuide.user_id == user["user_id"]
+    ).first()
+
+    if not guide:
+        raise HTTPException(404, "Guide not found")
+
+    return {
+        "unique_id": guide.unique_id,
+        "status": guide.status,
+        "wallet_balance": guide.wallet_balance,
+        "rating": guide.rating,
+        "total_calls": guide.total_calls,
+        "referral_code": guide.referral_code
+    }
+
+
+# ---------------------------------------------------
+# EARNINGS SUMMARY
+# ---------------------------------------------------
+@router.get("/earnings")
+def earnings(user=Depends(get_current_user), db: Session = Depends(get_db)):
+
+    guide = db.query(SeniorGuide).filter(
+        SeniorGuide.user_id == user["user_id"]
+    ).first()
+
+    if not guide:
+        raise HTTPException(404, "Guide not found")
+
+    return {
+        "wallet_balance": guide.wallet_balance,
+        "total_earned": guide.total_earned,
+        "referral_bonus": guide.referral_bonus
+    }
+
+
+# ---------------------------------------------------
+# GUIDE STATS
+# ---------------------------------------------------
+
+
+# ---------------------------------------------------
+# REFERRAL STATS
+# ---------------------------------------------------
+@router.get("/referrals")
+def referrals(user=Depends(get_current_user), db: Session = Depends(get_db)):
+
+    guide = db.query(SeniorGuide).filter(
+        SeniorGuide.user_id == user["user_id"]
+    ).first()
+
+    referrals = db.query(SeniorGuide).filter(
+        SeniorGuide.referred_by == guide.id
+    ).all()
+
+    return {
+    "total_calls": guide.total_calls or 0,
+    "rating": guide.rating or 0,
+    "students": guide.total_calls or 0,
+    "status": guide.status
+}
+
+
+# ---------------------------------------------------
+# REFERRAL LIST
+# ---------------------------------------------------
+@router.get("/referrals/list")
+def referral_list(user=Depends(get_current_user), db: Session = Depends(get_db)):
+
+    guide = db.query(SeniorGuide).filter(
+        SeniorGuide.user_id == user["user_id"]
+    ).first()
+
+    return db.query(SeniorGuide).filter(
+        SeniorGuide.referred_by == guide.id
+    ).all()
+
+# FIRST this route
+@router.get("/my-status")
+def my_status(user=Depends(get_current_user), db: Session = Depends(get_db)):
+
+    guide = db.query(SeniorGuide).filter(
+        SeniorGuide.user_id == user["user_id"]
+    ).first()
+
+    if not guide:
+        raise HTTPException(404, "Guide not found")
+
+    return {
+        "status": guide.status,
+        "test_score": guide.test_score
+    }
+@router.get("/stats")
+def guide_stats(
+    user=Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+
+    guide = db.query(SeniorGuide).filter(
+        SeniorGuide.user_id == user["user_id"]
+    ).first()
+
+    if not guide:
+        raise HTTPException(404, "Guide not found")
+
+    total_students = db.query(Booking).filter(
+        Booking.guide_id == guide.id
+    ).count()
+
+    return {
+        "total_calls": guide.total_calls or 0,
+        "students": total_students,
+        "rating": guide.rating or 0
+    }
+# AFTER that this route
+@router.get("/{guide_id}")
+def get_guide_profile(
+    guide_id: int,
+    db: Session = Depends(get_db)
+):
+
+    guide = db.query(SeniorGuide).filter(
+        SeniorGuide.id == guide_id
+    ).first()
+
+    if not guide:
+        raise HTTPException(404, "Guide not found")
+
+    return guide
+
+
+@router.get("/slots/booked")
+def get_booked_slots(date: str, db: Session = Depends(get_db)):
+
+    slots = db.query(GuideSlot).filter(
+        GuideSlot.status == "BOOKED"
+    ).all()
+
+    return [s.time_slot for s in slots]
+
