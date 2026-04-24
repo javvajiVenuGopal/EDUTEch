@@ -55,7 +55,7 @@ import PrivacyPolicy from "./components/Home/pravicy";
 import Rules from "./components/Home/Term";
 import RefundPolicy from "./components/Home/Help";
 import MyProfile from "./components/Home/Myprofie";
-
+import AdminRegister from "./components/Pages/Admin/AdminRegister";
 import { useEffect } from "react";
 import { Toaster } from "react-hot-toast";
 import SeekerNotifications from "./components/Pages/SeekerDhashboard/Sekeernofication";
@@ -306,6 +306,9 @@ return () => socket?.close();
             <AdminDashboard />
           </RoleProtectedRoute>
         } />
+        <Route path="/admin-register" element={<RoleProtectedRoute allowedRoles={[
+            "SUPERADMIN"
+          ]}><AdminRegister /></RoleProtectedRoute>} />
 
         {/* STATIC */}
 
