@@ -10,7 +10,7 @@ function AdminRegister() {
     is_active: true
   });
 
-  // 🔐 Only SUPERADMIN allowed
+  //  Only SUPERADMIN allowed
   const role = localStorage.getItem("role");
 
   if (role !== "SUPERADMIN") {
@@ -67,7 +67,7 @@ function AdminRegister() {
         className="bg-white p-8 rounded-2xl shadow-lg w-[420px]"
       >
         <h2 className="text-2xl font-bold mb-6 text-center">
-          Create New Admin 👨‍💼
+          Create New Admin 
         </h2>
 
         {/* EMAIL */}
@@ -125,7 +125,7 @@ function AdminRegister() {
   type="submit"
   className="w-full bg-[#ff6b35] hover:bg-[#e55a2b] text-white py-3 rounded-lg font-semibold"
 >
-  Register Admin 🚀
+  Register Admin 
 </button>
       </form>
     </div>
