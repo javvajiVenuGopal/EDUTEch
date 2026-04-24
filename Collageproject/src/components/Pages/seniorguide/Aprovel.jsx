@@ -37,7 +37,7 @@ useEffect(() => {
         return;
       }
 
-      if (status === "PASSED") {
+      if (status === "ACTIVE") {
         navigate("/senior-dashboard");
         return;
       }
