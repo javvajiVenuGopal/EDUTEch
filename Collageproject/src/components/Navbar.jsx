@@ -11,6 +11,7 @@ function Navbar() {
   const navigate = useNavigate();
   const location = useLocation();
   const [unreadCount, setUnreadCount] = useState(0);
+  const role = localStorage.getItem("role");
   // 🔥 FIX: check token whenever route changes
   useEffect(() => {
     const token = localStorage.getItem("token");
