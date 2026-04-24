@@ -29,7 +29,7 @@ import {
   Download,
   Eye
 } from "lucide-react";
-
+import { useNavigate } from "react-router-dom";
 import {
   getPendingGuides,
   approveGuideDocs,
@@ -67,7 +67,7 @@ function AdminDashboard() {
   const [isLoading, setIsLoading] = useState(false);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   // ADD BELOW YOUR EXISTING STATES
-
+const navigate = useNavigate();
 // pagination state
 const [page, setPage] = useState(1);
 const rowsPerPage = 8;
@@ -371,6 +371,12 @@ const filteredUsers = users.filter(
                   <RefreshCw size={16} className={isLoading ? "animate-spin" : ""} />
                   Refresh
                 </button>
+                 <button
+  onClick={() => navigate("/admin-register")}
+  className="flex items-center gap-2 bg-gradient-to-r from-indigo-500 to-indigo-600 hover:from-indigo-600 hover:to-indigo-700 text-white px-4 py-2 rounded-xl shadow-md text-sm font-medium"
+>
+  + Add New Admin
+</button>
               </div>
             </div>
           </div>
