@@ -22,7 +22,8 @@ router = APIRouter(prefix="/guides", tags=["Senior Guides"])
 # APPLY AS SENIOR GUIDE
 # ---------------------------------------------------
 @router.post("/apply")
-def apply_guide(  background_tasks: BackgroundTasks,
+def apply_guide(
+    background_tasks: BackgroundTasks,
     college_name: str = Form(...),
     branch: str = Form(...),
     year_of_study: str = Form(...),
@@ -37,24 +38,19 @@ def apply_guide(  background_tasks: BackgroundTasks,
     db: Session = Depends(get_db)
 ):
 
-    # Only seekers can apply
     if user["role"] != "seeker":
         raise HTTPException(403, "Only seekers can apply")
 
-    # Aadhaar validation
     if not aadhaar_number.isdigit() or len(aadhaar_number) != 12:
         raise HTTPException(400, "Invalid Aadhaar number")
 
-    # Check existing application
+
+    # ================= CHECK EXISTING GUIDE =================
+
     existing = db.query(SeniorGuide).filter(
         SeniorGuide.user_id == user["user_id"]
     ).first()
 
-    if existing and existing.status != "REJECTED":
-        return {
-            "message": "Application already submitted",
-            "status": existing.status
-        }
 
     # ================= REFERRAL VALIDATION =================
 
@@ -69,18 +65,17 @@ def apply_guide(  background_tasks: BackgroundTasks,
         if not referrer:
             raise HTTPException(400, "Invalid referral code")
 
-        # prevent self referral
         if referrer.user_id == user["user_id"]:
             raise HTTPException(400, "Cannot use your own referral code")
 
-        # prevent duplicate referral usage
         already_used = db.query(Referral).filter(
             Referral.referred_user_id == user["user_id"],
-            Referral.status.in_(["PENDING", "APPROVED"])
+            Referral.status == "APPROVED"
         ).first()
 
         if already_used:
             raise HTTPException(400, "Referral already applied")
+
 
     # ================= SAVE FILES =================
 
@@ -88,57 +83,84 @@ def apply_guide(  background_tasks: BackgroundTasks,
     college_path = save_file(college_id, "college_id")
     hall_path = save_file(hall_ticket, "hall_ticket")
 
-    # ================= CREATE GUIDE =================
 
-    guide = SeniorGuide(
-        user_id=user["user_id"],
-        college_name=college_name,
-        branch=branch,
-        year_of_study=year_of_study,
-        aadhaar_number=aadhaar_number,
-        aadhaar_path=aadhaar_path,
-        college_id_card_path=college_path,
-        hall_ticket_path=hall_path,
-        referred_by=referrer.id if referrer else None,
-        referral_paid=False,
-        status="PENDING_VERIFICATION",
-        attempts=0,
-        created_at=datetime.utcnow()
-    )
+    # ================= UPDATE EXISTING RECORD =================
 
-    db.add(guide)
+    if existing:
 
-    # ================= CREATE REFERRAL RECORD =================
+        existing.college_name = college_name
+        existing.branch = branch
+        existing.year_of_study = year_of_study
+        existing.aadhaar_number = aadhaar_number
+        existing.aadhaar_path = aadhaar_path
+        existing.college_id_card_path = college_path
+        existing.hall_ticket_path = hall_path
+        existing.referred_by = referrer.id if referrer else None
+        existing.status = "PENDING_VERIFICATION"
+        existing.attempts = 0
+        existing.created_at = datetime.utcnow()
+
+        guide = existing
+
+    else:
+
+        guide = SeniorGuide(
+            user_id=user["user_id"],
+            college_name=college_name,
+            branch=branch,
+            year_of_study=year_of_study,
+            aadhaar_number=aadhaar_number,
+            aadhaar_path=aadhaar_path,
+            college_id_card_path=college_path,
+            hall_ticket_path=hall_path,
+            referred_by=referrer.id if referrer else None,
+            referral_paid=False,
+            status="PENDING_VERIFICATION",
+            attempts=0,
+            created_at=datetime.utcnow()
+        )
+
+        db.add(guide)
+
+
+    # ================= CREATE / UPDATE REFERRAL =================
 
     if referrer:
 
-        referral = Referral(
-            referrer_id=referrer.id,
-            referred_user_id=user["user_id"],
-            amount=25,
-            status="PENDING"
-        )
+        referral = db.query(Referral).filter(
+            Referral.referred_user_id == user["user_id"]
+        ).first()
 
-        db.add(referral)
+        if referral:
+            referral.referrer_id = referrer.id
+            referral.status = "PENDING"
+        else:
+            referral = Referral(
+                referrer_id=referrer.id,
+                referred_user_id=user["user_id"],
+                amount=25,
+                status="PENDING"
+            )
+            db.add(referral)
 
-    # ================= COMMIT ONCE =================
+
+    # ================= SAVE =================
 
     db.commit()
     db.refresh(guide)
 
-    # ================= CREATE NOTIFICATION =================
 
     background_tasks.add_task(
-    create_notification,
+        create_notification,
         db,
         user["user_id"],
         "Application Submitted",
         "Your guide application submitted successfully"
-    
-)
+    )
+
 
     return {
-        "message": "Documents submitted successfully",
+        "message": "Application submitted successfully",
         "status": guide.status
     }
 
