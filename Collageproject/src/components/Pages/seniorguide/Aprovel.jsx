@@ -38,7 +38,7 @@ useEffect(() => {
       }
 
       if (status === "ACTIVE") {
-        navigate("/senior-dashboard");
+        navigate("/guide-dashboard");
         return;
       }
 
