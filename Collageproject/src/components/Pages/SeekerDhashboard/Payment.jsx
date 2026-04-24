@@ -88,8 +88,11 @@ function Payment() {
       order_id: order.order_id,
 
       handler: async (response) => {
-
+         
+  console.log("Razorpay handler triggered");
+  console.log("Response:", response);
         try {
+          
 
           await verifyBookingPayment({
 
