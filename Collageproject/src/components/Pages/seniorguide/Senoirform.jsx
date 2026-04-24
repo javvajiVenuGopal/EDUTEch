@@ -59,9 +59,9 @@ useEffect(() => {
       }
 
       if (status === "REJECTED") {
-        navigate("/seeker");
-        return;
-      }
+  toast.error("Application rejected. Please reapply.");
+  return;
+}
 
     } catch (err) {
 
