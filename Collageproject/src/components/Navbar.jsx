@@ -180,7 +180,7 @@ useEffect(() => {
   <button
     onClick={() =>
       navigate(
-        role === "guide"
+        role === "senior_guide"
           ? "/guide-dashboard"
           : "/seeker"
       )
