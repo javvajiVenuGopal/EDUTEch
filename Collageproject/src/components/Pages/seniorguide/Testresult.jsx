@@ -20,7 +20,7 @@ useEffect(() => {
       console.log("Guide status:", status);
 
       if (!status) {
-        navigate("/guide");
+        navigate("/become-guide");
         return;
       }
 
