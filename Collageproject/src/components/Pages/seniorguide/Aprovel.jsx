@@ -43,9 +43,9 @@ useEffect(() => {
       }
 
       if (status === "REJECTED") {
-        navigate("/seeker");
-        return;
-      }
+  navigate("/become-guide");
+  return;
+}
 
     } catch (err) {
 
@@ -79,7 +79,7 @@ useEffect(() => {
       // ❌ Admin rejected → go home
       if (currentStatus === "REJECTED") {
         toast.error("Application Rejected ❌");
-        navigate("/");
+       navigate("/become-guide");
       }
 
     } catch (err) {
