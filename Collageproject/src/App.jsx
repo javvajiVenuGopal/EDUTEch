@@ -65,7 +65,7 @@ import {
   connectNotificationSocket,
   closeNotificationSocket
 } from "./Service/notificationsocket";
-import NotFound from "./components/pages/NotFound";
+import NotFound from "./components/Pages/NotFound";
 function App() {
   const navigate = useNavigate();
   useEffect(() => {
