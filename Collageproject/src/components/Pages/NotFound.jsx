@@ -13,7 +13,7 @@ function NotFound() {
       </h2>
 
       <p className="text-slate-500 mt-2">
-        Sorry nana, you are trying to access a page that doesn't exist.
+        Sorry , you are trying to access a page that doesn't exist.
       </p>
 
       <button
