@@ -65,6 +65,7 @@ import {
   connectNotificationSocket,
   closeNotificationSocket
 } from "./Service/notificationsocket";
+import NotFound from "./components/pages/NotFound";
 function App() {
   const navigate = useNavigate();
   useEffect(() => {
@@ -320,6 +321,7 @@ return () => socket?.close();
         <Route path="/privacy" element={<PrivacyPolicy />} />
         <Route path="/terms" element={<Rules />} />
         <Route path="/help" element={<RefundPolicy />} />
+        <Route path="*" element={<NotFound />} />
 
       </Routes>
 
