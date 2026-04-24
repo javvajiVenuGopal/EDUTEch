@@ -39,7 +39,7 @@ useEffect(() => {
         return;
       }
 
-      if (status === "ACTIVE") {
+     if (status === "Passed") {
         navigate("/guide-dashboard");
         return;
       }
