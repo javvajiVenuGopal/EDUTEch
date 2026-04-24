@@ -81,7 +81,7 @@ function Hero() {
                   Find a Seeker <ArrowRight className="w-5 h-5" />
                 </button>
               </Link>
-              <Link to="/guide">
+              <Link to="/become-guide">
                 <button className="px-8 py-3 rounded-full font-semibold transition-all hover:scale-105 border" style={{ borderColor: "#ff6b35", color: "#ff6b35" }}>
                   Become a SeniorGuide
                 </button>
