@@ -53,10 +53,9 @@ useEffect(() => {
         return;
       }
 
-      if (status === "REJECTED") {
-        navigate("/seeker");
-        return;
-      }
+     if (status === "REJECTED") {
+  navigate("/become-guide");
+}
 
     } catch (err) {
 
