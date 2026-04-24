@@ -43,7 +43,7 @@ useEffect(() => {
       }
 
       if (status === "REJECTED") {
-        navigate("/seeker-dashboard");
+        navigate("/seeker");
         return;
       }
 
