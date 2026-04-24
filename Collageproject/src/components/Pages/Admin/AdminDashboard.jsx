@@ -146,7 +146,7 @@ console.log(refunds);
   }, [activeTab]);
   const handleDeleteUser = async (guideId) => {
   await deleteUser(guideId);
-  toast.success("User deleted successfully 🗑️");
+  toast.success("User deleted successfully ");
   loadData();
 };
 
@@ -169,24 +169,24 @@ loadData();
   };
   const handlePassGuide = async (id) => {
     await passGuideTest(id);
-toast.success("Guide test passed 🎉");
+toast.success("Guide test passed ");
 loadData();
   };
   const handleResetAttempts = async (id) => {
     await resetGuideAttempts(id);
-toast("Attempts reset successfully 🔄");
+toast("Attempts reset successfully ");
 loadData();
   };
   const handleForceActivate = async (id) => {
     await forceActivateGuide(id);
-toast.success("Guide activated ⚡");
+toast.success("Guide activated ");
 loadData();
   };
 
   // ================= WITHDRAW =================
   const handleWithdrawApprove = async (id) => {
    await approveWithdraw(id);
-toast.success("Withdraw approved 💰");
+toast.success("Withdraw approved ");
 loadData();
   };
   const handleWithdrawReject = async (id) => {
@@ -198,19 +198,19 @@ loadData();
   // ================= REFUND =================
   const handleRefund = async (bookingId) => {
     await processRefund(bookingId);
-toast.success("Refund processed successfully 💸");
+toast.success("Refund processed successfully ");
 loadData();
   };
 
   // ================= USERS =================
   const handleSuspendUser = async (id) => {
     await suspendUser(id);
-toast.error("User suspended 🚫");
+toast.error("User suspended ");
 loadData();
   };
   const handleActivateUser = async (id) => {
     await activateUser(id);
-toast.success("User activated ✅");
+toast.success("User activated ");
 loadData();
   };
 
