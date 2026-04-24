@@ -261,7 +261,7 @@ return () => socket?.close();
           </RoleProtectedRoute>
         } />
         <Route
-  path="/guide"
+  path="/become-guide"
   element={
     <RoleProtectedRoute allowedRoles={["seeker"]}>
       <SeniorGuideForm />
