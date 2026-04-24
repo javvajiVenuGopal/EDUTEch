@@ -39,10 +39,7 @@ useEffect(() => {
         return;
       }
 
-     if (status === "ACTIVE") {
-        navigate("/guide-dashboard");
-        return;
-      }
+     
 
       if (status === "REJECTED") {
   navigate("/become-guide");
@@ -90,21 +87,22 @@ const checkStatus = async () => {
   }, []);
 
   // Countdown and redirect for passed status
-  useEffect(() => {
-    if (status === "ACTIVE") {
-      const timer = setInterval(() => {
-        setCountdown((prev) => {
-          if (prev <= 1) {
-            clearInterval(timer);
-            navigate("/guide-dashboard");
-            return 0;
-          }
-          return prev - 1;
-        });
-      }, 1000);
-      return () => clearInterval(timer);
-    }
-  }, [status, navigate]);
+useEffect(() => {
+  if (status === "Passed") {
+    const timer = setInterval(() => {
+      setCountdown((prev) => {
+        if (prev <= 1) {
+          clearInterval(timer);
+          navigate("/guide-dashboard");
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }
+}, [status, navigate]);
 
   // Handle retry for failed status
   const handleRetry = () => {
