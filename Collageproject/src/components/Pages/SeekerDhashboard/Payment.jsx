@@ -112,10 +112,8 @@ function Payment() {
 
         } catch (error) {
 
-          console.error(
-            "Payment verification failed:",
-            error
-          );
+       toast.error("Payment verification failed ❌");
+console.error(error);
 
         }
 
