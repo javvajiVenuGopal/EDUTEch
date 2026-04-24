@@ -39,15 +39,14 @@ useEffect(() => {
         return;
       }
 
-      if (status === "PASSED") {
+      if (status === "ACTIVE") {
         navigate("/senior-dashboard");
         return;
       }
 
       if (status === "REJECTED") {
-        navigate("/seeker");
-        return;
-      }
+  navigate("/become-guide");
+}
 
     } catch (err) {
 
@@ -92,7 +91,7 @@ const checkStatus = async () => {
 
   // Countdown and redirect for passed status
   useEffect(() => {
-    if (status === "Passed") {
+    if (status === "ACTIVE") {
       const timer = setInterval(() => {
         setCountdown((prev) => {
           if (prev <= 1) {
@@ -117,7 +116,7 @@ const checkStatus = async () => {
     navigate("/");
   };
 
-  if (status === "Passed") {
+  if (status === "ACTIVE") {
     return (
       <div className="min-h-screen flex items-center justify-center px-4" style={{ backgroundColor: "#fffbed" }}>
         <div className="max-w-md w-full">
