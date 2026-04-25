@@ -28,33 +28,34 @@ useEffect(() => {
 
       console.log("Guide status:", status);
 
-      if (!status) {
-        navigate("/become-guide");
-        return;
-      }
-
-      if (status === "PENDING_VERIFICATION") {
-        navigate("/pending-approval");
-        return;
-      }
-
-      if (status === "ELIGIBLE_TEST") {
-        navigate("/guide-test");
-        return;
-      }
-
-      if (status === "TEST_PENDING") {
-        navigate("/test-pending");
-        return;
-      }
-
-      if (status === "ACTIVE") {
-        navigate("/guide-dashboard");
-        return;
-      }
-
-     if (status === "REJECTED") {
+          if (!status && location.pathname !== "/guide") {
   navigate("/become-guide");
+  return;
+}
+
+if (status === "PENDING_VERIFICATION" && location.pathname !== "/pending-approval") {
+  navigate("/pending-approval");
+  return;
+}
+
+if (status === "ELIGIBLE_TEST" && location.pathname !== "/guide-test") {
+  navigate("/guide-test");
+  return;
+}
+
+if (status === "TEST_PENDING" && location.pathname !== "/test-pending") {
+  navigate("/test-pending");
+  return;
+}
+
+if (status === "ACTIVE" && location.pathname !== "/guide-dashboard") {
+  navigate("/guide-dashboard");
+  return;
+}
+
+if (status === "REJECTED" && location.pathname !== "//become-guide") {
+  navigate("/become-guide");
+  return;
 }
 
     } catch (err) {
