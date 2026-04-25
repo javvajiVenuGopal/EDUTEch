@@ -9,7 +9,7 @@ from datetime import datetime
 from app.auth.models import User
 from app.core.database import get_db
 from app.senior_guide.models import GuideSlot, SeniorGuide
-from app.auth.utils import get_current_user
+from app.auth.utils import get_current_user,validate_file,validate_size
 from app.senior_guide.schemas import TestSubmitSchema
 from app.services.file_upload import save_file
 from app.notifications.service import create_notification
@@ -82,10 +82,19 @@ def apply_guide(
     validate_file(aadhaar.filename)
     validate_file(college_id.filename)
     validate_file(hall_ticket.filename)
+    validate_size(aadhaar)
+    validate_size(college_id)
+    validate_size(hall_ticket)
     
     aadhaar_path = save_file(aadhaar, "aadhaar")
     college_path = save_file(college_id, "college_id")
     hall_path = save_file(hall_ticket, "hall_ticket")
+    aadhaar_exists = db.query(SeniorGuide).filter(
+    SeniorGuide.aadhaar_number == aadhaar_number
+).first()
+    
+    if aadhaar_exists and aadhaar_exists.user_id != user["user_id"]:
+        raise HTTPException(400, "Aadhaar already registered")
 
 
     # ================= UPDATE EXISTING RECORD =================
