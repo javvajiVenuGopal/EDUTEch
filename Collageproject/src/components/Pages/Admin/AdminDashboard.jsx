@@ -51,8 +51,14 @@ import {
   getAdminDashboard,
   getRevenueSummary,getAllUsers,deleteUser,
   getGuideDocuments ,
+  updateQuestion,
+  createQuestion,
+  deleteQuestion,
+  getAllQuestions
 } from "../../../Apiroute";
 import toast from "react-hot-toast";
+import { HelpCircle } from "lucide-react";
+
 function AdminDashboard() {
   const [activeTab, setActiveTab] = useState("dashboard");
   const [applications, setApplications] = useState([]);
@@ -69,6 +75,11 @@ function AdminDashboard() {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [selectedGuide, setSelectedGuide] = useState(null);
 const [showGuideModal, setShowGuideModal] = useState(false);
+  const [questions, setQuestions] = useState([]);
+const [questionText, setQuestionText] = useState("");
+const [answerText, setAnswerText] = useState("");
+const [editingId, setEditingId] = useState(null);
+  
   // ADD BELOW YOUR EXISTING STATES
 const navigate = useNavigate();
 // pagination state
@@ -135,6 +146,10 @@ console.log(refunds);
    if (activeTab === "users") {
   const res = await getAllUsers(); // create this API
   setUsers(res.data || []);
+}
+      if (activeTab === "questions") {
+  const res = await getAllQuestions();
+  setQuestions(res.data || []);
 }
     } catch (err) {
       console.error("Admin dashboard error:", err);
@@ -241,6 +256,41 @@ loadData();
 toast.success("User activated ");
 loadData();
   };
+  //===============Questions====================
+  const handleSaveQuestion = async () => {
+  if (!questionText || !answerText)
+    return toast.error("Fill all fields");
+
+  if (editingId) {
+    await updateQuestion(editingId, {
+      question: questionText,
+      answer: answerText,
+    });
+
+    toast.success("Question updated ");
+  } else {
+    await createQuestion({
+      question: questionText,
+      answer: answerText,
+    });
+
+    toast.success("Question created ");
+  }
+
+  setQuestionText("");
+  setAnswerText("");
+  setEditingId(null);
+
+  loadData();
+};
+
+  const handleDeleteQuestion = async (id) => {
+  await deleteQuestion(id);
+
+  toast.success("Deleted successfully ");
+
+  loadData();
+};
 
   // ================= LOGOUT =================
   const handleLogout = () => {
@@ -318,6 +368,7 @@ const filteredUsers = users.filter(
     { id: "withdraws", label: "Withdrawals", icon: <CreditCard size={18} /> },
     { id: "refunds", label: "Refunds", icon: <RotateCcw size={18} /> },
     { id: "users", label: "Users", icon: <Users size={18} /> }
+    { id: "questions", label: "Questions", icon: <HelpCircle size={18} /> }
   ];
 
   return (
@@ -816,6 +867,93 @@ wd.guideId?.name ||
               </div>
             </div>
           )}
+          {activeTab === "questions" && !isLoading && (
+  <div className="bg-white rounded-2xl shadow-sm border p-6">
+
+    <h3 className="text-lg font-semibold mb-4">
+      Manage Eligibility Questions
+    </h3>
+
+    {/* FORM */}
+    <div className="flex gap-4 mb-6">
+
+      <input
+        placeholder="Enter question"
+        value={questionText}
+        onChange={(e) => setQuestionText(e.target.value)}
+        className="border px-4 py-2 rounded-lg w-full"
+      />
+
+      <input
+        placeholder="Correct answer"
+        value={answerText}
+        onChange={(e) => setAnswerText(e.target.value)}
+        className="border px-4 py-2 rounded-lg w-full"
+      />
+
+      <button
+        onClick={handleSaveQuestion}
+        className="bg-[#ff6b35] text-white px-6 rounded-lg"
+      >
+        {editingId ? "Update" : "Create"}
+      </button>
+
+    </div>
+
+    {/* QUESTIONS TABLE */}
+
+    <table className="min-w-full divide-y divide-slate-200">
+
+      <thead>
+        <tr>
+          <th className="px-4 py-2 text-left">Question</th>
+          <th className="px-4 py-2 text-left">Answer</th>
+          <th className="px-4 py-2 text-left">Actions</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        {questions.map((q) => (
+          <tr key={q.id}>
+
+            <td className="px-4 py-2">
+              {q.question}
+            </td>
+
+            <td className="px-4 py-2">
+              {q.correct_answer}
+            </td>
+
+            <td className="px-4 py-2 flex gap-2">
+
+              <button
+                onClick={() => {
+                  setEditingId(q.id);
+                  setQuestionText(q.question);
+                  setAnswerText(q.correct_answer);
+                }}
+                className="bg-sky-50 text-sky-700 px-3 py-1 rounded"
+              >
+                Edit
+              </button>
+
+              <button
+                onClick={() => handleDeleteQuestion(q.id)}
+                className="bg-rose-50 text-rose-700 px-3 py-1 rounded"
+              >
+                Delete
+              </button>
+
+            </td>
+
+          </tr>
+        ))}
+      </tbody>
+
+    </table>
+
+  </div>
+)}
 
           {/* Empty States */}
           {!isLoading && activeTab !== "dashboard" && (
