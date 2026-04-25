@@ -801,13 +801,13 @@ export const openDocument = (fileName) =>
   `/admin/documents/${fileName}`;
 
 export const createQuestion = (data) =>
-  axiosInstance.post("/questions/create", null, { params: data });
+  axiosInstance.post("/admin/questions/create", null, { params: data });
 
 export const getAllQuestions = () =>
-  axiosInstance.get("/questions/all");
+  axiosInstance.get("/admin/questions/all");
 
 export const updateQuestion = (id, data) =>
-  axiosInstance.put(`/questions/update/${id}`, null, { params: data });
+  axiosInstance.put(`/admin/questions/update/${id}`, null, { params: data });
 
 export const deleteQuestion = (id) =>
-  axiosInstance.delete(`/questions/delete/${id}`);
+  axiosInstance.delete(`/admin/questions/delete/${id}`);
