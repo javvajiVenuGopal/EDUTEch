@@ -123,7 +123,7 @@ def pending_guides(
     return [
     {
         "id": g.id,
-        "full_name": g.user.full_name,
+        "full_name": g.unique_id,
         "email": g.user.email,
         "college_name": g.college_name,
         "aadhaar": g.aadhaar_path,
