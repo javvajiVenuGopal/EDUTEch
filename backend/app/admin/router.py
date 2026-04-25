@@ -12,7 +12,7 @@ from app.auth.utils import (
 )
 
 from app.admin.schemas import AdminLoginSchema, AdminRegisterSchema
-from app.admin.models import AdminRole
+from app.admin.models import AdminRole,EligibilityQuestion
 from app.admin.permission import role_required
 from app.admin.export_router import admin_only
 
@@ -965,3 +965,79 @@ def guide_details(
         "verified_by": guide.verified_by,
         "verified_at": guide.verified_at
     }
+@router.post("/questions/create")
+def create_question(
+    question: str,
+    answer: str,
+    user=Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+
+    admin_only(user)
+
+    new_q = EligibilityQuestion(
+        question=question,
+        correct_answer=answer
+    )
+
+    db.add(new_q)
+    db.commit()
+
+    return {"message": "Question created"}
+
+@router.get("/questions/all")
+def get_all_questions(
+    user=Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+
+    admin_only(user)
+
+    return db.query(EligibilityQuestion).all()
+
+
+@router.put("/questions/update/{question_id}")
+def update_question(
+    question_id: int,
+    question: str,
+    answer: str,
+    user=Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+
+    admin_only(user)
+
+    q = db.query(EligibilityQuestion).filter(
+        EligibilityQuestion.id == question_id
+    ).first()
+
+    if not q:
+        raise HTTPException(404, "Question not found")
+
+    q.question = question
+    q.correct_answer = answer
+
+    db.commit()
+
+    return {"message": "Updated successfully"}
+
+@router.delete("/questions/delete/{question_id}")
+def delete_question(
+    question_id: int,
+    user=Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+
+    admin_only(user)
+
+    q = db.query(EligibilityQuestion).filter(
+        EligibilityQuestion.id == question_id
+    ).first()
+
+    if not q:
+        raise HTTPException(404, "Question not found")
+
+    db.delete(q)
+    db.commit()
+
+    return {"message": "Deleted successfully"}
