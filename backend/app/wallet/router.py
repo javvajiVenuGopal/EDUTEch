@@ -493,14 +493,83 @@ def credit_call_earning(  background_tasks: BackgroundTasks,
 
     guide.wallet_balance += CALL_REWARD
 
-    tx = WalletTransaction(
-        guide_id=guide.id,
-        amount=CALL_REWARD,
-        type="credit",
-        call_id=call_id
-    )
-
-    db.add(tx)
+    # --------------------------------------------------
+    # UPDATE CALL COUNT
+    # --------------------------------------------------
+    
+    if guide.total_calls is None:
+        guide.total_calls = 0
+    
+    guide.total_calls += 1
+    
+    
+    # --------------------------------------------------
+    # REFERRAL BONUS AFTER FIRST SUCCESSFUL CALL
+    # --------------------------------------------------
+    
+    if guide.total_calls == 1 and guide.referred_by and not guide.referral_paid:
+    
+        GUIDE_REWARD = 25
+        USER_REWARD = 50
+    
+        referrer = db.query(SeniorGuide).filter(
+            SeniorGuide.id == guide.referred_by
+        ).first()
+    
+        if referrer:
+    
+            # credit referrer wallet
+            referrer.wallet_balance += GUIDE_REWARD
+            referrer.referral_bonus += GUIDE_REWARD
+    
+            db.add(WalletTransaction(
+                guide_id=referrer.id,
+                amount=GUIDE_REWARD,
+                type="credit",
+                remark="Referral bonus earned"
+            ))
+    
+            # credit new guide wallet
+            guide.wallet_balance += USER_REWARD
+    
+            db.add(WalletTransaction(
+                guide_id=guide.id,
+                amount=USER_REWARD,
+                type="credit",
+                remark="Referral signup reward"
+            ))
+    
+            referral = db.query(Referral).filter(
+                Referral.referred_user_id == guide.user_id,
+                Referral.status == "PENDING"
+            ).first()
+    
+            if referral:
+                referral.status = "APPROVED"
+    
+            guide.referral_paid = True
+    
+            background_tasks.add_task(
+                create_notification,
+                db,
+                guide.user_id,
+                "Referral Bonus Received",
+                "₹50 credited to your wallet"
+            )
+    
+            background_tasks.add_task(
+                create_notification,
+                db,
+                referrer.user_id,
+                "Referral Bonus Earned",
+                "₹25 credited to your wallet"
+            )
+    
+    
+    # --------------------------------------------------
+    # SAVE CHANGES
+    # --------------------------------------------------
+    
     db.commit()
     background_tasks.add_task(
     create_notification,
