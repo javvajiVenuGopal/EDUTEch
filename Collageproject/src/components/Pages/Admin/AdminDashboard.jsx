@@ -67,6 +67,8 @@ function AdminDashboard() {
   const [search, setSearch] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const [selectedGuide, setSelectedGuide] = useState(null);
+const [showGuideModal, setShowGuideModal] = useState(false);
   // ADD BELOW YOUR EXISTING STATES
 const navigate = useNavigate();
 // pagination state
@@ -195,6 +197,17 @@ loadData();
 
   } catch (err) {
     console.error("Document load failed", err);
+  }
+};
+  const viewGuideDetails = async (guideId) => {
+  try {
+    const res = await getGuideDocuments(guideId);
+
+    setSelectedGuide(res.data);
+    setShowGuideModal(true);
+
+  } catch (err) {
+    console.error("Guide details load failed", err);
   }
 };
 
@@ -514,9 +527,17 @@ const filteredUsers = users.filter(
                             <button onClick={() => handleForceActivate(app.id)} className="px-3 py-1.5 text-xs font-medium rounded-lg bg-purple-50 text-purple-700 hover:bg-purple-100 transition-all">Activate</button>
                             <button onClick={() => handleSuspendGuide(app.id)} className="px-3 py-1.5 text-xs font-medium rounded-lg bg-orange-50 text-orange-700 hover:bg-orange-100 transition-all">Suspend</button>
                             <button
- onClick={() => viewDocuments(app.id)}
+  onClick={() => viewGuideDetails(app.id)}
+  className="px-3 py-1.5 text-xs rounded-lg bg-indigo-50 text-indigo-700 hover:bg-indigo-100"
 >
- View Docs
+  View Details
+</button>
+
+<button
+  onClick={() => viewDocuments(app.id)}
+  className="px-3 py-1.5 text-xs rounded-lg bg-slate-50 text-slate-700 hover:bg-slate-100"
+>
+  View Docs
 </button>
                           </div>
                         </td>
@@ -857,6 +878,49 @@ wd.guideId?.name ||
           )}
         </div>
       </div>
+      {showGuideModal && selectedGuide && (
+  <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
+    <div className="bg-white rounded-2xl shadow-xl w-[420px] p-6 relative">
+
+      <h2 className="text-lg font-semibold mb-4">
+        Guide Details
+      </h2>
+
+      <div className="space-y-2 text-sm">
+
+        <p><strong>College:</strong> {selectedGuide.college}</p>
+
+        <p><strong>Branch:</strong> {selectedGuide.branch}</p>
+
+        <p><strong>Wallet:</strong> ₹{selectedGuide.wallet}</p>
+
+        <p><strong>Attempts:</strong> {selectedGuide.attempts}</p>
+
+        <p><strong>Status:</strong> {selectedGuide.status}</p>
+
+        <p><strong>Verified By:</strong> {selectedGuide.verified_by || "—"}</p>
+
+        <p>
+          <strong>Verified At:</strong>{" "}
+          {selectedGuide.verified_at
+            ? new Date(selectedGuide.verified_at).toLocaleString()
+            : "—"}
+        </p>
+
+      </div>
+
+      <div className="flex justify-end mt-6">
+        <button
+          onClick={() => setShowGuideModal(false)}
+          className="px-4 py-2 text-sm bg-slate-200 rounded-lg hover:bg-slate-300"
+        >
+          Close
+        </button>
+      </div>
+
+    </div>
+  </div>
+)}
     </div>
   );
 }
