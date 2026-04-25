@@ -121,18 +121,17 @@ def pending_guides(
     ).all()
 
     return [
-        {
-            "id": g.id,
-            "full_name": g.full_name,
-            "email": g.email,
-            "college_name": g.college_name,
-            "aadhaar": g.aadhaar_file,
-            "college_id": g.college_id_file,
-            "hall_ticket": g.hall_ticket_file,
-            "status": g.status
-        }
-        for g in guides
-    ]
+    {
+        "id": g.id,
+        "full_name": g.user.full_name,
+        "email": g.user.email,
+        "college_name": g.college_name,
+        "aadhaar": g.aadhaar_path,
+        "college_id": g.college_id_card_path,
+        "hall_ticket": g.hall_ticket_path,
+        "status": g.status
+    }
+]
 
 from datetime import datetime
 
