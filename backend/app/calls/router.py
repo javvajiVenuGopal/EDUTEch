@@ -244,6 +244,7 @@ async def end_call(
 
         if duration < 300:
             booking.refund_flag = True
+            booking.refund_reason = "Call duration < 5 minutes"
 
     db.commit()
 
