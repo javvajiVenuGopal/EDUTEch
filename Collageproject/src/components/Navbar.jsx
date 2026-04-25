@@ -189,7 +189,7 @@ useEffect(() => {
 
     {role === "seeker" && (
       <button
-        onClick={() => navigate("/guide")}
+        onClick={() => navigate("/become-guide")}
         className="px-4 py-2 text-sm border border-[#ff6b35] text-[#ff6b35] rounded-lg hover:bg-[#ff6b35] hover:text-white"
       >
         Become a Senior Guide
