@@ -14,3 +14,18 @@ class AdminRole(Base):
     role = Column(String, default="admin", nullable=False)
     
     is_active = Column(Boolean, default=True)
+
+
+
+
+class EligibilityQuestion(Base):
+
+    __tablename__ = "eligibility_questions"
+
+    id = Column(Integer, primary_key=True, index=True)
+
+    question = Column(String, nullable=False)
+
+    correct_answer = Column(String, nullable=False)
+
+    is_active = Column(Boolean, default=True)
