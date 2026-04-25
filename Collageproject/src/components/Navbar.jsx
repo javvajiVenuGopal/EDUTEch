@@ -137,12 +137,6 @@ useEffect(() => {
             {/* BEFORE LOGIN */}
             {!isLoggedIn && (
               <>
-                <Link
-                  to="/admin-login"
-                  className="text-sm text-gray-500 border px-3 py-1 rounded"
-                >
-                  Admin
-                </Link>
 
                 <Link
                     to="/register"
@@ -177,19 +171,31 @@ useEffect(() => {
         </span>
       )}
     </div>
-    {isLoggedIn && role !== "ADMIN" && role !== "SUPERADMIN" && (
-  <button
-    onClick={() =>
-      navigate(
-        role === "senior_guide"
-          ? "/guide-dashboard"
-          : "/seeker"
-      )
-    }
-    className="px-4 py-2 text-sm bg-indigo-600 text-white rounded-lg hover:bg-indigo-700"
-  >
-    Dashboard
-  </button>
+  {isLoggedIn &&
+ !["ADMIN","SUPERADMIN","SUPPORT_ADMIN","FINANCIAL_ADMIN","CONTENT_ADMIN"].includes(role) && (
+  <>
+    <button
+      onClick={() =>
+        navigate(
+          role === "senior_guide"
+            ? "/guide-dashboard"
+            : "/seeker"
+        )
+      }
+      className="px-4 py-2 text-sm bg-[#ff6b35] text-white rounded-lg hover:bg-[#e55a2b]"
+    >
+      Dashboard
+    </button>
+
+    {role === "seeker" && (
+      <button
+        onClick={() => navigate("/guide")}
+        className="px-4 py-2 text-sm border border-[#ff6b35] text-[#ff6b35] rounded-lg hover:bg-[#ff6b35] hover:text-white"
+      >
+        Become a Senior Guide
+      </button>
+    )}
+  </>
 )}
 
     {/* Logout button */}
