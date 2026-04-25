@@ -29,7 +29,7 @@ function GuideCallPage() {
   const [joined, setJoined] = useState(false);
 
   const ringtoneRef = useRef(null);
-  
+  const [callId, setCallId] = useState(null);
   const [startTime, setStartTime] = useState(null);
   const callEndedRef = useRef(false);
   const joinCall = async () => {
@@ -38,7 +38,9 @@ function GuideCallPage() {
       audio: true
     });
 
-    await createCallSession(booking_id);
+    const session = await createCallSession(booking_id);
+
+setCallId(session.call_id);
 
     await startCallAPI(booking_id);
 
@@ -84,7 +86,9 @@ const leaveCall = async () => {
   await endCallAPI(booking_id);
 
   try {
-    await creditCallEarning(booking_id);
+    if (callId) {
+  await creditCallEarning(callId);
+}
   } catch (err) {
     console.log("Wallet credit failed:", err);
   }
