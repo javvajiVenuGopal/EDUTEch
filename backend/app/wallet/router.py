@@ -328,10 +328,11 @@ def verify_wallet_payment(  background_tasks: BackgroundTasks,
 
 
     tx = WalletTransaction(
-        guide_id=guide.id,
-        amount=amount,
-        type="credit"
-    )
+    guide_id=guide.id,
+    amount=amount,
+    type="WALLET_TOPUP",
+    remark="Wallet recharge via Razorpay"
+)
 
 
     db.add(tx)
@@ -492,6 +493,14 @@ def credit_call_earning(  background_tasks: BackgroundTasks,
         return {"message": "Already credited"}
 
     guide.wallet_balance += CALL_REWARD
+    db.add(WalletTransaction(
+    guide_id=guide.id,
+    amount=CALL_REWARD,
+    type="CALL_EARNING",
+    call_id=call_id,
+    booking_id=call.booking_id,
+    remark="Call completion reward"
+))
 
     # --------------------------------------------------
     # UPDATE CALL COUNT
@@ -525,9 +534,10 @@ def credit_call_earning(  background_tasks: BackgroundTasks,
             db.add(WalletTransaction(
                 guide_id=referrer.id,
                 amount=GUIDE_REWARD,
-                type="credit",
+                type="REFERRAL",
                 remark="Referral bonus earned",
-                call_id=call_id
+                call_id=call_id,
+                 booking_id=call.booking_id
                 
                 
             ))
@@ -538,8 +548,9 @@ def credit_call_earning(  background_tasks: BackgroundTasks,
             db.add(WalletTransaction(
                 guide_id=guide.id,
                 amount=USER_REWARD,
-                type="credit",
+                type="REFERRAL",
                 remark="Referral signup reward",
+                 booking_id=call.booking_id,
                 call_id=call_id
             ))
     
