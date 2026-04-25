@@ -142,7 +142,7 @@ function SubmitRating() {
         <div className="bg-gray-50 p-4 rounded-lg mb-6">
 
           <p className="font-semibold">
-            Guide: {booking.guide_name}
+            Guide: {booking.guide_unique_id}
           </p>
 
           <p className="text-sm text-gray-600">
