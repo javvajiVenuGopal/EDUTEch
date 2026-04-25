@@ -115,6 +115,8 @@ def update_profile(background_tasks: BackgroundTasks,
     return {"message": "Profile updated successfully"}
 
 
+from sqlalchemy import func
+
 @router.get("/guides/search")
 def search_guides(college: str, branch: str, db: Session = Depends(get_db)):
 
@@ -124,4 +126,14 @@ def search_guides(college: str, branch: str, db: Session = Depends(get_db)):
         SeniorGuide.status == "ACTIVE"
     ).all()
 
-    return guides
+    return [
+        {
+            "id": g.id,
+            "guide_unique_id": g.unique_id,
+            "college_name": g.college_name,
+            "branch": g.branch,
+            "rating": g.rating,
+            "total_calls": g.total_calls
+        }
+        for g in guides
+    ]
