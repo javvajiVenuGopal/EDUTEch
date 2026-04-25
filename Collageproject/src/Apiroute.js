@@ -794,5 +794,8 @@ export const getReferralStats = () =>
 // APPLY REFERRAL CODE
 export const applyReferralCode = (code) =>
   axiosInstance.post(`/wallet/apply/${code}`);
+export const getGuideDocuments = (guideId) =>
+  axiosInstance.get(`/admin/guides/${guideId}`);
 
-
+export const openDocument = (fileName) =>
+  `/admin/documents/${fileName}`;
