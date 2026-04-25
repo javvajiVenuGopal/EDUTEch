@@ -71,13 +71,23 @@ def get_current_user(
             status_code=401,
             detail="Invalid token"
         )
-ALLOWED_TYPES = ["pdf", "jpg", "jpeg", "png"]
+import os
 
-def validate_file(filename):
-    ext = filename.split(".")[-1].lower()
+ALLOWED_EXTENSIONS = {".jpg", ".jpeg", ".png", ".pdf"}
+MAX_FILE_SIZE = 5 * 1024 * 1024  # 5MB
 
-    if ext not in ALLOWED_TYPES:
-        raise HTTPException(
-            400,
-            "Only PDF / JPG / PNG allowed"
-        )
+
+def validate_file(filename: str):
+    ext = os.path.splitext(filename)[1].lower()
+
+    if ext not in ALLOWED_EXTENSIONS:
+        raise ValueError("Only PDF, JPG, PNG allowed")
+
+
+def validate_size(file):
+    file.file.seek(0, 2)
+    size = file.file.tell()
+    file.file.seek(0)
+
+    if size > MAX_FILE_SIZE:
+        raise ValueError("File size must be under 5MB")
