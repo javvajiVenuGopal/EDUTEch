@@ -107,26 +107,42 @@ def register_admin(
 
 # ---------------- GUIDE MANAGEMENT ----------------
 
+from datetime import datetime
+
 @router.get("/guides/pending")
 def pending_guides(
     user=Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
-
     role_required(["SUPERADMIN"])(user)
 
     guides = db.query(SeniorGuide).filter(
         SeniorGuide.status == "PENDING_VERIFICATION"
     ).all()
 
-    return guides
+    return [
+        {
+            "id": g.id,
+            "full_name": g.full_name,
+            "email": g.email,
+            "college_name": g.college_name,
+            "aadhaar": g.aadhaar_file,
+            "college_id": g.college_id_file,
+            "hall_ticket": g.hall_ticket_file,
+            "status": g.status
+        }
+        for g in guides
+    ]
 
+from datetime import datetime
 
 @router.put("/guides/approve/{guide_id}")
 def approve_guide(
     guide_id: int,
+    user=Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
+    admin_only(user)
 
     guide = db.query(SeniorGuide).filter(
         SeniorGuide.id == guide_id
@@ -137,6 +153,8 @@ def approve_guide(
 
     guide.status = "ELIGIBLE_TEST"
     guide.is_verified = True
+    guide.verified_by = user["email"]
+    guide.verified_at = datetime.utcnow()
 
     db.commit()
 
@@ -144,7 +162,6 @@ def approve_guide(
         "message": "Documents verified successfully",
         "status": guide.status
     }
-
 
 @router.put("/guides/reject/{guide_id}")
 def reject_guide(guide_id: int, user=Depends(get_current_user), db: Session = Depends(get_db)):
@@ -916,3 +933,32 @@ from fastapi.responses import FileResponse
 def serve_document(file_name: str):
     path = f"uploads/{file_name}"
     return FileResponse(path)
+
+@router.get("/guides/{guide_id}")
+def guide_details(
+    guide_id: int,
+    user=Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    admin_only(user)
+
+    guide = db.query(SeniorGuide).filter(
+        SeniorGuide.id == guide_id
+    ).first()
+
+    if not guide:
+        raise HTTPException(404, "Guide not found")
+
+    return {
+        "id": guide.id,
+        "college": guide.college_name,
+        "branch": guide.branch,
+        "attempts": guide.attempts,
+        "wallet": guide.wallet_balance,
+        "status": guide.status,
+        "aadhaar": guide.aadhaar_file,
+        "college_id": guide.college_id_file,
+        "hall_ticket": guide.hall_ticket_file,
+        "verified_by": guide.verified_by,
+        "verified_at": guide.verified_at
+    }
