@@ -520,7 +520,7 @@ const filteredUsers = users.filter(
                   <h3 className="text-lg font-semibold text-slate-800 mb-4">Recent Withdrawals</h3>
                   <div className="space-y-3">
                     {withdraws.slice(0, 5).map((wd) => (
-                      <div key={wd._id} className="flex justify-between items-center p-3 bg-slate-50 rounded-xl">
+                      <div key={wd.id} className="flex justify-between items-center p-3 bg-slate-50 rounded-xl">
                         <div>
                           <p className="font-medium text-slate-800">{wd.guide_name || 'Guide'}</p>
                           <p className="text-xs text-slate-500">{new Date(wd.createdAt).toLocaleDateString()}</p>
@@ -538,7 +538,7 @@ const filteredUsers = users.filter(
                   <h3 className="text-lg font-semibold text-slate-800 mb-4">Recent Bookings</h3>
                   <div className="space-y-3">
                     {bookings.slice(0, 5).map((booking) => (
-                      <div key={booking._id} className="flex justify-between items-center p-3 bg-slate-50 rounded-xl">
+                      <div key={booking.id} className="flex justify-between items-center p-3 bg-slate-50 rounded-xl">
                         <div>
                           <p className="font-medium text-slate-800">{booking.user_name || 'User'}</p>
                           <p className="text-xs text-slate-500">{new Date(booking.date).toLocaleDateString()}</p>
@@ -578,7 +578,7 @@ const filteredUsers = users.filter(
                   </thead>
                   <tbody className="divide-y divide-slate-100">
                     {filteredApps.map((app) => (
-                      <tr key={app._id} className="hover:bg-slate-50/80 transition-colors">
+                      <tr key={app.id} className="hover:bg-slate-50/80 transition-colors">
                         <td className="px-6 py-4 text-sm font-medium text-slate-800">{app.college_name}</td>
                         <td className="px-6 py-4 text-sm text-slate-700">{app.full_name}</td>
                         <td className="px-6 py-4 text-sm text-slate-500">{app.email}</td>
@@ -633,7 +633,7 @@ const filteredUsers = users.filter(
                   </thead>
                   <tbody className="divide-y divide-slate-100">
                     {paginate(filteredBookings).map((booking) => (
-                      <tr key={booking._id} className="hover:bg-slate-50/80 transition-colors">
+                      <tr key={booking.id} className="hover:bg-slate-50/80 transition-colors">
                        <td className="px-6 py-4 text-sm text-slate-700">
         {booking.seeker_name || booking.seeker_id || "N/A"}
       </td>
@@ -685,7 +685,7 @@ const filteredUsers = users.filter(
                   </thead>
                   <tbody className="divide-y divide-slate-100">
                     {filteredCalls.map((call) => (
-                      <tr key={call._id} className="hover:bg-slate-50/80 transition-colors">
+                      <tr key={call.id} className="hover:bg-slate-50/80 transition-colors">
                         {/* USER */}
       <td className="px-6 py-4 text-sm text-slate-700">
         {call.seeker_name || call.seeker_id || "N/A"}
@@ -734,7 +734,7 @@ const filteredUsers = users.filter(
                   </thead>
                   <tbody className="divide-y divide-slate-100">
                     {filteredWithdraws.map((wd) => (
-                      <tr key={wd._id} className="hover:bg-slate-50/80 transition-colors">
+                      <tr key={wd.id} className="hover:bg-slate-50/80 transition-colors">
                         <td className="px-6 py-4 text-sm text-slate-700">{wd.guide_name ||
 wd.guide?.name ||
 wd.guideId?.name ||
@@ -869,7 +869,7 @@ wd.guideId?.name ||
                   </thead>
                   <tbody className="divide-y divide-slate-100">
                     {filteredUsers.map((user) => (
-                      <tr key={user._id} className="hover:bg-slate-50/80 transition-colors">
+                      <tr key={user.id} className="hover:bg-slate-50/80 transition-colors">
                         <td className="px-6 py-4 text-sm font-medium text-slate-800">{user.name}</td>
                         <td className="px-6 py-4 text-sm text-slate-500">{user.email}</td>
                         <td className="px-6 py-4">
@@ -878,9 +878,9 @@ wd.guideId?.name ||
                         <td className="px-6 py-4">{getStatusBadge(user.status)}</td>
                         <td className="px-6 py-4">
                           {user.status === 'suspended' ? (
-                            <button onClick={() => handleActivateUser(user._id)} className="px-3 py-1.5 text-xs font-medium rounded-lg bg-emerald-50 text-emerald-700 hover:bg-emerald-100 transition-all flex items-center gap-1"><UserCheck size={12} /> Activate</button>
+                            <button onClick={() => handleActivateUser(user.id)} className="px-3 py-1.5 text-xs font-medium rounded-lg bg-emerald-50 text-emerald-700 hover:bg-emerald-100 transition-all flex items-center gap-1"><UserCheck size={12} /> Activate</button>
                           ) : (
-                            <button onClick={() => handleSuspendUser(user._id)} className="px-3 py-1.5 text-xs font-medium rounded-lg bg-rose-50 text-rose-700 hover:bg-rose-100 transition-all flex items-center gap-1"><UserX size={12} /> Suspend</button>
+                            <button onClick={() => handleSuspendUser(user.id)} className="px-3 py-1.5 text-xs font-medium rounded-lg bg-rose-50 text-rose-700 hover:bg-rose-100 transition-all flex items-center gap-1"><UserX size={12} /> Suspend</button>
                           )}
                         </td>
                       </tr>
