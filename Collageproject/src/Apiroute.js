@@ -10,8 +10,8 @@ export const adminLogin = (data) =>
 export const registerAdmin = (data) =>
   axiosInstance.post("/admin/register", data);
 
-export const creditCallEarning = (bookingId) =>
-  axiosInstance.post(`/wallet/credit-call-earning/${bookingId}`);
+export const creditCallEarning = (callId) =>
+  axiosInstance.post(`/wallet/credit-call-earning/${callId}`);
 
 // ================= GUIDE MANAGEMENT =================
 
