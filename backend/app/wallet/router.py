@@ -526,7 +526,10 @@ def credit_call_earning(  background_tasks: BackgroundTasks,
                 guide_id=referrer.id,
                 amount=GUIDE_REWARD,
                 type="credit",
-                remark="Referral bonus earned"
+                remark="Referral bonus earned",
+                call_id=call_id
+                
+                
             ))
     
             # credit new guide wallet
@@ -536,7 +539,8 @@ def credit_call_earning(  background_tasks: BackgroundTasks,
                 guide_id=guide.id,
                 amount=USER_REWARD,
                 type="credit",
-                remark="Referral signup reward"
+                remark="Referral signup reward",
+                call_id=call_id
             ))
     
             referral = db.query(Referral).filter(
