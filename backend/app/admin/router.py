@@ -111,27 +111,26 @@ from datetime import datetime
 
 @router.get("/guides/pending")
 def pending_guides(
+    db: Session = Depends(get_db),
     user=Depends(get_current_user),
-    db: Session = Depends(get_db)
 ):
-    role_required(["SUPERADMIN"])(user)
+    admin_only(user)
 
     guides = db.query(SeniorGuide).filter(
         SeniorGuide.status == "PENDING_VERIFICATION"
     ).all()
 
     return [
-    {
-        "id": g.id,
-        "full_name": g.unique_id,
-        "email": g.user.email,
-        "college_name": g.college_name,
-        "aadhaar": g.aadhaar_path,
-        "college_id": g.college_id_card_path,
-        "hall_ticket": g.hall_ticket_path,
-        "status": g.status
-    }
-]
+        {
+            "id": guide.id,
+            "name": guide.user.full_name,
+            "college": guide.college_name,
+            "branch": guide.branch,
+            "year": guide.year_of_study,
+            "created_at": guide.created_at,
+        }
+        for guide in guides
+    ]
 
 from datetime import datetime
 
