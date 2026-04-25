@@ -53,7 +53,7 @@ if (status === "ACTIVE" && location.pathname !== "/guide-dashboard") {
   return;
 }
 
-if (status === "REJECTED" && location.pathname !== "//become-guide") {
+if (status === "REJECTED" && location.pathname !== "/become-guide") {
   navigate("/become-guide");
   return;
 }
