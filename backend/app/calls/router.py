@@ -85,6 +85,10 @@ def create_call_session(background_tasks: BackgroundTasks,
 
     return {"session_id": session.id}
 
+from datetime import datetime, timedelta
+import random
+
+
 @router.get("/token/{booking_id}")
 def get_agora_token(
     booking_id: int,
@@ -105,7 +109,34 @@ def get_agora_token(
     if not session:
         raise HTTPException(404, "Session not found")
 
-    import random
+    # -----------------------------------------
+    # SESSION WINDOW VALIDATION (REJOIN SUPPORT)
+    # -----------------------------------------
+
+    booking_time = datetime.fromisoformat(booking.time_slot)
+
+    session_start_time = booking_time - timedelta(minutes=5)
+    session_end_time = booking_time + timedelta(minutes=15)
+
+    now = datetime.utcnow()
+
+    # block early join
+    if now < session_start_time:
+        raise HTTPException(
+            400,
+            "Call session not started yet"
+        )
+
+    # block late join
+    if now > session_end_time:
+        raise HTTPException(
+            400,
+            "Call session expired"
+        )
+
+    # -----------------------------------------
+    # GENERATE TOKEN
+    # -----------------------------------------
 
     uid = random.randint(100000, 999999)
 
@@ -205,6 +236,14 @@ async def end_call(
 
     if call_session:
         call_session.status = "COMPLETED"
+    if call_session and call_session.start_time and call_session.end_time:
+
+        duration = (
+            call_session.end_time - call_session.start_time
+        ).total_seconds()
+
+        if duration < 300:
+            booking.refund_flag = True
 
     db.commit()
 
