@@ -13,7 +13,7 @@ from app.auth.utils import get_current_user,validate_file,validate_size
 from app.senior_guide.schemas import TestSubmitSchema
 from app.services.file_upload import save_file
 from app.notifications.service import create_notification
-
+from app.admin.models import EligibilityQuestion
 
 router = APIRouter(prefix="/guides", tags=["Senior Guides"])
 
@@ -178,21 +178,11 @@ def apply_guide(
     }
 
 
-# ---------------------------------------------------
-# TEST QUESTIONS
-# ---------------------------------------------------
-QUESTIONS = [
-    {"id": 1, "question": "Placement percentage?", "answer": "80"},
-    {"id": 2, "question": "Hostel available?", "answer": "yes"},
-    {"id": 3, "question": "Attendance strict?", "answer": "yes"},
-]
-
-
-# ---------------------------------------------------
-# GET TEST QUESTIONS
-# ---------------------------------------------------
 @router.get("/test/questions")
-def get_questions(user=Depends(get_current_user), db: Session = Depends(get_db)):
+def get_questions(
+    user=Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
 
     guide = db.query(SeniorGuide).filter(
         SeniorGuide.user_id == user["user_id"]
@@ -204,14 +194,18 @@ def get_questions(user=Depends(get_current_user), db: Session = Depends(get_db))
     if guide.status != "ELIGIBLE_TEST":
         raise HTTPException(400, "Not eligible")
 
-    return [{"id": q["id"], "question": q["question"]} for q in QUESTIONS]
+    questions = db.query(EligibilityQuestion).filter(
+        EligibilityQuestion.is_active == True
+    ).all()
 
+    return [
+        {"id": q.id, "question": q.question}
+        for q in questions
+    ]
 
-# ---------------------------------------------------
-# SUBMIT TEST
-# ---------------------------------------------------
 @router.post("/test/submit")
-def submit_test(  background_tasks: BackgroundTasks,
+def submit_test(
+    background_tasks: BackgroundTasks,
     data: TestSubmitSchema,
     user=Depends(get_current_user),
     db: Session = Depends(get_db)
@@ -233,22 +227,33 @@ def submit_test(  background_tasks: BackgroundTasks,
     if guide.status != "ELIGIBLE_TEST":
         raise HTTPException(400, "Not eligible")
 
+    # fetch questions from DB
+    questions = db.query(EligibilityQuestion).filter(
+        EligibilityQuestion.is_active == True
+    ).all()
+
+    if not questions:
+        raise HTTPException(400, "No questions available")
+
     guide.attempts += 1
 
-    answers = {
+    # map answers dynamically
+    submitted_answers = {
         "1": data.q1,
         "2": data.q2,
         "3": data.q3
     }
 
     score = sum(
-        1 for q in QUESTIONS
-        if answers[str(q["id"])].strip().lower() == q["answer"]
+        1 for q in questions
+        if submitted_answers.get(str(q.id), "").strip().lower()
+        == q.correct_answer.lower()
     )
 
-    percentage = (score / len(QUESTIONS)) * 100
+    percentage = (score / len(questions)) * 100
     guide.test_score = percentage
 
+    # PASS CONDITION
     if percentage >= 60:
 
         guide.status = "ACTIVE"
@@ -259,13 +264,11 @@ def submit_test(  background_tasks: BackgroundTasks,
         if not guide.referral_code:
             guide.referral_code = f"REF-SG-{guide.id}"
 
-        # initialize wallet only first time
         if guide.wallet_balance is None:
             guide.wallet_balance = 0
 
         if guide.total_earned is None:
             guide.total_earned = 0
-
 
         user_obj = db.query(User).filter(
             User.id == user["user_id"]
@@ -274,28 +277,26 @@ def submit_test(  background_tasks: BackgroundTasks,
         if user_obj:
             user_obj.role = "senior_guide"
 
+        # activation notification ONLY when passed
+        background_tasks.add_task(
+            create_notification,
+            db,
+            user["user_id"],
+            "Guide Activated",
+            "Congratulations! You are now an active senior guide"
+        )
 
-        
-        
+    # FAIL 3 TIMES → AUTO REJECT
     elif guide.attempts >= 3:
-            guide.status = "REJECTED"
+        guide.status = "REJECTED"
 
     db.commit()
-    background_tasks.add_task(
-    create_notification,
-        db,
-        user["user_id"],
-        "Guide Activated",
-        "Congratulations! You are now an active senior guide"
-    
-)
 
     return {
         "score": percentage,
         "status": guide.status,
         "attempts": guide.attempts
     }
-
 
 # ---------------------------------------------------
 # GUIDE PROFILE
