@@ -105,10 +105,10 @@ const paginate = (data) => {
             getAllCalls(),
             getAllWithdrawRequests()
           ]);
-          console.log(dashboardRes);
-console.log(callsRes);
-console.log(withdrawRes.data.length);
-console.log(refunds);
+          console.log("dashboard response:",dashboardRes);
+console.log("callresponse=",callsRes);
+console.log("withdraw response=",withdrawRes.data.length);
+console.log("refund response=",refunds);
         setDashboardStats(dashboardRes.data || {});
         setRevenueStats(revenueRes.data || {});
         setAnalyticsStats(analyticsRes.data || {});
