@@ -106,7 +106,6 @@ def submit_rating(  background_tasks: BackgroundTasks,
 
 
 # ---------------- GUIDE RATING SUMMARY ----------------
-
 @router.get("/guide/{guide_id}")
 def get_guide_rating(
     guide_id: int,
@@ -126,6 +125,7 @@ def get_guide_rating(
 
     return {
         "guide_id": guide_id,
+        "guide_unique_id": guide.unique_id,
         "average_rating": guide.rating,
         "total_ratings": len(ratings)
     }
@@ -171,14 +171,23 @@ def get_booking_rating(
     db: Session = Depends(get_db)
 ):
 
-    rating = db.query(GuideRating).filter(
-        GuideRating.booking_id == booking_id
+    booking = db.query(Booking).filter(
+        Booking.id == booking_id
     ).first()
 
-    if not rating:
-        raise HTTPException(404, "Rating not found")
+    if not booking:
+        raise HTTPException(404, "Booking not found")
 
-    return rating
+    guide = db.query(SeniorGuide).filter(
+        SeniorGuide.id == booking.guide_id
+    ).first()
+
+    return {
+        "booking_id": booking.id,
+        "guide_unique_id": guide.unique_id if guide else None,
+        "time_slot": booking.time_slot,
+        "status": booking.status
+    }
 
 
 # ---------------- DELETE RATING (ADMIN) ----------------
