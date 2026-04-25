@@ -1,10 +1,11 @@
-from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, Boolean
+from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, Boolean, Float
 from sqlalchemy.orm import relationship
 from datetime import datetime
 from app.core.database import Base
 
 
 class SeniorGuide(Base):
+
     __tablename__ = "senior_guides"
 
     id = Column(Integer, primary_key=True)
@@ -14,27 +15,38 @@ class SeniorGuide(Base):
     college_name = Column(String, nullable=False)
     branch = Column(String, nullable=False)
     year_of_study = Column(String)
+
     aadhaar_number = Column(String)
     aadhaar_path = Column(String)
     college_id_card_path = Column(String)
     hall_ticket_path = Column(String)
+
     status = Column(String, default="PENDING_VERIFICATION")
     is_verified = Column(Boolean, default=False)
+
+    verified_by = Column(String, nullable=True)
+    verified_at = Column(DateTime, nullable=True)
+
     test_score = Column(Integer, default=0)
     attempts = Column(Integer, default=0)
-    unique_id = Column(String, nullable=True) 
-    rating = Column(Integer, default=0)
+
+    unique_id = Column(String, nullable=True)
+
+    rating = Column(Float, default=0)
+
     total_calls = Column(Integer, default=0)
+
     wallet_balance = Column(Integer, default=0)
     total_earned = Column(Integer, default=0)
     pending_withdrawal = Column(Integer, default=0)
-    created_at = Column(DateTime, default=datetime.utcnow)
+
     referral_code = Column(String, unique=True, nullable=True)
     referred_by = Column(Integer, nullable=True)
+
     referral_bonus = Column(Integer, default=0)
     referral_paid = Column(Boolean, default=False)
-    verified_by = Column(String, nullable=True)
-    verified_at = Column(DateTime, nullable=True)
+
+    created_at = Column(DateTime, default=datetime.utcnow)
 
     user = relationship("User", backref="senior_profile")
 
