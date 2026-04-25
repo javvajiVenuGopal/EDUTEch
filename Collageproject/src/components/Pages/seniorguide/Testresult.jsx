@@ -19,7 +19,7 @@ useEffect(() => {
 
       console.log("Guide status:", status);
 
-    if (!status && location.pathname !== "/guide") {
+    if (!status && location.pathname !== "/become-guide") {
   navigate("/become-guide");
   return;
 }
@@ -44,7 +44,7 @@ if (status === "ACTIVE" && location.pathname !== "/guide-dashboard") {
   return;
 }
 
-if (status === "REJECTED" && location.pathname !== "//become-guide") {
+if (status === "REJECTED" && location.pathname !== "/become-guide") {
   navigate("/become-guide");
   return;
 }
