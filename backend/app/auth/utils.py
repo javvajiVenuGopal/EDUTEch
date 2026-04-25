@@ -71,3 +71,13 @@ def get_current_user(
             status_code=401,
             detail="Invalid token"
         )
+ALLOWED_TYPES = ["pdf", "jpg", "jpeg", "png"]
+
+def validate_file(filename):
+    ext = filename.split(".")[-1].lower()
+
+    if ext not in ALLOWED_TYPES:
+        raise HTTPException(
+            400,
+            "Only PDF / JPG / PNG allowed"
+        )
