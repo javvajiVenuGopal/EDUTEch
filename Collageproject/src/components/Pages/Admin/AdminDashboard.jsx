@@ -239,11 +239,22 @@ loadData();
   };
 
   // ================= REFUND =================
-  const handleRefund = async (bookingId) => {
-    await processRefund(bookingId);
-toast.success("Refund processed successfully ");
-loadData();
-  };
+  const handleRefund = async (bookingId, action) => {
+  try {
+    await processRefund(bookingId, action);
+
+    toast.success(
+      action === "APPROVED"
+        ? "Refund approved successfully "
+        : "Refund rejected successfully "
+    );
+
+    loadData();
+  } catch (err) {
+    console.error(err);
+    toast.error("Refund action failed ");
+  }
+};
 
   // ================= USERS =================
   const handleSuspendUser = async (id) => {
@@ -806,12 +817,21 @@ wd.guideId?.name ||
 
       <td className="px-6 py-4">
                 {ref.status === "PENDING" ? (
-                  <button
-                    onClick={() => handleRefund(ref.booking_id)}
-                    className="px-3 py-1.5 text-xs font-medium rounded-lg bg-sky-50 text-sky-700 hover:bg-sky-100 transition-all"
-                  >
-                    Process Refund
-                  </button>
+                <div className="flex gap-2">
+  <button
+    onClick={() => handleRefund(ref.booking_id, "APPROVED")}
+    className="px-3 py-1.5 text-xs font-medium rounded-lg bg-emerald-50 text-emerald-700 hover:bg-emerald-100"
+  >
+    Approve
+  </button>
+
+  <button
+    onClick={() => handleRefund(ref.booking_id, "REJECTED")}
+    className="px-3 py-1.5 text-xs font-medium rounded-lg bg-rose-50 text-rose-700 hover:bg-rose-100"
+  >
+    Reject
+  </button>
+</div>
                 ) : (
                   <span className="text-xs text-slate-400">
                     No actions
