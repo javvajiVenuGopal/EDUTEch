@@ -49,7 +49,8 @@ import {
   activateUser,
   getAdminAnalytics,
   getAdminDashboard,
-  getRevenueSummary,getAllUsers,deleteUser
+  getRevenueSummary,getAllUsers,deleteUser,
+  getGuideDocuments ,
 } from "../../../Apiroute";
 import toast from "react-hot-toast";
 function AdminDashboard() {
@@ -182,6 +183,20 @@ loadData();
 toast.success("Guide activated ");
 loadData();
   };
+  const viewDocuments = async (guideId) => {
+  try {
+    const res = await getGuideDocuments(guideId);
+
+    const docs = res.data;
+
+    window.open(`/admin/documents/${docs.aadhaar}`, "_blank");
+    window.open(`/admin/documents/${docs.college_id}`, "_blank");
+    window.open(`/admin/documents/${docs.hall_ticket}`, "_blank");
+
+  } catch (err) {
+    console.error("Document load failed", err);
+  }
+};
 
   // ================= WITHDRAW =================
   const handleWithdrawApprove = async (id) => {
