@@ -498,6 +498,11 @@ const filteredUsers = users.filter(
                             <button onClick={() => handleResetAttempts(app.id)} className="px-3 py-1.5 text-xs font-medium rounded-lg bg-amber-50 text-amber-700 hover:bg-amber-100 transition-all">Reset</button>
                             <button onClick={() => handleForceActivate(app.id)} className="px-3 py-1.5 text-xs font-medium rounded-lg bg-purple-50 text-purple-700 hover:bg-purple-100 transition-all">Activate</button>
                             <button onClick={() => handleSuspendGuide(app.id)} className="px-3 py-1.5 text-xs font-medium rounded-lg bg-orange-50 text-orange-700 hover:bg-orange-100 transition-all">Suspend</button>
+                            <button
+ onClick={() => viewDocuments(app.id)}
+>
+ View Docs
+</button>
                           </div>
                         </td>
                       </tr>
