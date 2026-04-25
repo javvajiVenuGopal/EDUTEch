@@ -233,6 +233,47 @@ def verify_payment(background_tasks: BackgroundTasks,
     db.add(notification)
 
     db.commit()
+    from app.services.calendar_service import create_calendar_invite
+    from app.email.email_service import send_calendar_invite
+    from datetime import datetime, timedelta
+    import os
+    
+    # ensure folder exists
+    os.makedirs("calendar_invites", exist_ok=True)
+    
+    start_time = datetime.fromisoformat(booking.time_slot)
+    end_time = start_time + timedelta(minutes=15)
+    
+    file_path = f"calendar_invites/invite_{booking.id}.ics"
+    
+    create_calendar_invite(
+        title="Exameets Consultation Call",
+        description=f"Booking ID: {booking.id}",
+        start_time=start_time,
+        end_time=end_time,
+        file_path=file_path
+    )
+    
+    # fetch seeker
+    seeker = db.query(User).filter(
+        User.id == booking.seeker_id
+    ).first()
+    
+    # fetch guide
+    guide = db.query(SeniorGuide).filter(
+        SeniorGuide.id == booking.guide_id
+    ).first()
+    
+    guide_user = db.query(User).filter(
+        User.id == guide.user_id
+    ).first()
+    
+    # send emails
+    if seeker:
+        send_calendar_invite(seeker.email, file_path)
+    
+    if guide_user:
+        send_calendar_invite(guide_user.email, file_path)
     guide = db.query(SeniorGuide).filter(
     SeniorGuide.id == booking.guide_id
 ).first()
