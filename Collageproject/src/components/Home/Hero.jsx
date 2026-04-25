@@ -76,17 +76,15 @@ function Hero() {
 
             {/* CTA Buttons */}
             <motion.div variants={fadeUp} className="flex flex-col sm:flex-row gap-4">
-              <Link to="/seeker">
-                <button className="flex items-center gap-2 px-8 py-3 rounded-full font-semibold text-white shadow-md transition-all hover:scale-105" style={{ backgroundColor: "#ff6b35" }}>
-                  Find a Seeker <ArrowRight className="w-5 h-5" />
-                </button>
-              </Link>
-              <Link to="/become-guide">
-                <button className="px-8 py-3 rounded-full font-semibold transition-all hover:scale-105 border" style={{ borderColor: "#ff6b35", color: "#ff6b35" }}>
-                  Become a SeniorGuide
-                </button>
-              </Link>
-            </motion.div>
+  <Link to="/seeker">
+    <button
+      className="flex items-center gap-2 px-8 py-3 rounded-full font-semibold text-white shadow-md transition-all hover:scale-105"
+      style={{ backgroundColor: "#ff6b35" }}
+    >
+      Connect with a Guide <ArrowRight className="w-5 h-5" />
+    </button>
+  </Link>
+</motion.div>
 
             {/* Features */}
             <motion.div variants={fadeUp} className="flex flex-wrap gap-4 pt-4">
