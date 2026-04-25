@@ -750,7 +750,7 @@ def admin_dashboard(user=Depends(get_current_user), db: Session = Depends(get_db
         "users": db.query(User).count(),
         "guides": db.query(SeniorGuide).count(),
         "bookings": db.query(Booking).count(),
-        "withdraw_requests": db.query(WithdrawalRequest).filter(
+        "withdraws": db.query(WithdrawalRequest).filter(
             WithdrawalRequest.status == "PENDING"
         ).count()
     }
@@ -888,3 +888,31 @@ def filter_users_by_role(
     users = db.query(User).filter(User.role == role).all()
 
     return users
+
+@router.get("/guides/documents/{guide_id}")
+def get_guide_documents(
+    guide_id: int,
+    user=Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    admin_only(user)
+
+    guide = db.query(SeniorGuide).filter(
+        SeniorGuide.id == guide_id
+    ).first()
+
+    if not guide:
+        raise HTTPException(404, "Guide not found")
+
+    return {
+        "aadhaar": guide.aadhaar_file,
+        "college_id": guide.college_id_file,
+        "hall_ticket": guide.hall_ticket_file
+    }
+
+from fastapi.responses import FileResponse
+
+@router.get("/documents/{file_name}")
+def serve_document(file_name: str):
+    path = f"uploads/{file_name}"
+    return FileResponse(path)
