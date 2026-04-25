@@ -105,6 +105,9 @@ const paginate = (data) => {
             getAllCalls(),
             getAllWithdrawRequests()
           ]);
+        console.log(dashboardRes.data);
+console.log(analyticsRes.data);
+console.log(revenueRes.data);
           console.log("dashboard response:",dashboardRes);
 console.log("callresponse=",callsRes);
 console.log("withdraw response=",withdrawRes.data.length);
