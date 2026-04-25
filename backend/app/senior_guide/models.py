@@ -18,7 +18,7 @@ class SeniorGuide(Base):
     aadhaar_path = Column(String)
     college_id_card_path = Column(String)
     hall_ticket_path = Column(String)
-    status = Column(String, default="PENDING")
+    status = Column(String, default="PENDING_VERIFICATION")
     is_verified = Column(Boolean, default=False)
     test_score = Column(Integer, default=0)
     attempts = Column(Integer, default=0)
