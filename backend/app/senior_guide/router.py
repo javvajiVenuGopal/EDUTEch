@@ -79,6 +79,10 @@ def apply_guide(
 
     # ================= SAVE FILES =================
 
+    validate_file(aadhaar.filename)
+    validate_file(college_id.filename)
+    validate_file(hall_ticket.filename)
+    
     aadhaar_path = save_file(aadhaar, "aadhaar")
     college_path = save_file(college_id, "college_id")
     hall_path = save_file(hall_ticket, "hall_ticket")
