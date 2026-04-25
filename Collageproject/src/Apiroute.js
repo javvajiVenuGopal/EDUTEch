@@ -799,3 +799,15 @@ export const getGuideDocuments = (guideId) =>
 
 export const openDocument = (fileName) =>
   `/admin/documents/${fileName}`;
+
+export const createQuestion = (data) =>
+  api.post("/questions/create", null, { params: data });
+
+export const getAllQuestions = () =>
+  api.get("/questions/all");
+
+export const updateQuestion = (id, data) =>
+  api.put(`/questions/update/${id}`, null, { params: data });
+
+export const deleteQuestion = (id) =>
+  api.delete(`/questions/delete/${id}`);
