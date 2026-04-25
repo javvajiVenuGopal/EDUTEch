@@ -74,7 +74,7 @@ function GuideList() {
   const filteredGuides = guides.filter(guide => {
     const matchesSearch = searchTerm === "" || 
       guide.full_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      guide.unique_id?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      guide.guide_unique_id?.toLowerCase().includes(searchTerm.toLowerCase()) ||
       guide.college_name?.toLowerCase().includes(searchTerm.toLowerCase());
     
     const matchesCollege = selectedCollege === "" || guide.college_name === selectedCollege;
@@ -201,7 +201,7 @@ function GuideList() {
                 <div className="relative bg-gradient-to-r from-[#ff6b35] to-[#ff6b35]/80 px-6 py-4">
                   <div className="absolute top-3 right-3">
                     <div className="bg-white/20 backdrop-blur-sm rounded-full px-2 py-1">
-                      <span className="text-white text-xs font-mono">{guide.unique_id}</span>
+                      <span className="text-white text-xs font-mono">{guide.guide_unique_id}</span>
                     </div>
                   </div>
                   <div className="flex items-center gap-3">
@@ -209,7 +209,7 @@ function GuideList() {
                       <User className="w-7 h-7 text-white" />
                     </div>
                     <div>
-                      <h3 className="text-white font-bold text-lg">{guide.unique_id || "Senior Guide"}</h3>
+                      <h3 className="text-white font-bold text-lg">{guide.guide_unique_id || "Senior Guide"}</h3>
                       <p className="text-orange-100 text-sm capitalize">{guide.role || "Academic Guide"}</p>
                     </div>
                   </div>
