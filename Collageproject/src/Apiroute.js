@@ -25,7 +25,7 @@ export const getAllUsers = () =>
 
 
 export const deleteUser = (guideId) =>
-  axiosInstance.delete(`/admin/users/${guideId}`);
+  axiosInstance.delete(`/admin/users/delete/${guideId}`);
 
 // APPROVE GUIDE DOCUMENTS
 export const approveGuideDocs = (guideId) =>
@@ -72,8 +72,8 @@ export const getRefundRequests = () =>
   axiosInstance.get("/admin/refund/requests");
 
 // PROCESS REFUND
-export const processRefund = (bookingId) =>
-  axiosInstance.put(`/admin/refund/${bookingId}`);
+export const processRefund = (bookingId, action) =>
+  axiosInstance.put(`/admin/refund/${bookingId}?action=${action}`);
 
 
 
