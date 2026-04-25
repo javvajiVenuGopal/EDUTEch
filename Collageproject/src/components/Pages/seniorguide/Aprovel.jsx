@@ -18,7 +18,7 @@ useEffect(() => {
       console.log("Guide status:", status);
 
     
-      if (!status && location.pathname !== "/guide") {
+      if (!status && location.pathname !== "/become-guide") {
   navigate("/become-guide");
   return;
 }
