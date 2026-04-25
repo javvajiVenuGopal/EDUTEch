@@ -209,7 +209,7 @@ function GuideList() {
                       <User className="w-7 h-7 text-white" />
                     </div>
                     <div>
-                      <h3 className="text-white font-bold text-lg">{guide.full_name || guide.name || "Guide"}</h3>
+                      <h3 className="text-white font-bold text-lg">{guide.unique_id || "Senior Guide"}</h3>
                       <p className="text-orange-100 text-sm capitalize">{guide.role || "Academic Guide"}</p>
                     </div>
                   </div>
