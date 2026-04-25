@@ -930,7 +930,11 @@ from fastapi.responses import FileResponse
 
 @router.get("/documents/{file_name}")
 def serve_document(file_name: str):
-    path = f"uploads/{file_name}"
+    path = file_name
+    
+    if not os.path.exists(path):
+        raise HTTPException(404, "File not found")
+
     return FileResponse(path)
 
 @router.get("/guides/{guide_id}")
