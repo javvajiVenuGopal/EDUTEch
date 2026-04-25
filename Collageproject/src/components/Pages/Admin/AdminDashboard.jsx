@@ -367,7 +367,7 @@ const filteredUsers = users.filter(
     { id: "calls", label: "Calls", icon: <Phone size={18} /> },
     { id: "withdraws", label: "Withdrawals", icon: <CreditCard size={18} /> },
     { id: "refunds", label: "Refunds", icon: <RotateCcw size={18} /> },
-    { id: "users", label: "Users", icon: <Users size={18} /> }
+    { id: "users", label: "Users", icon: <Users size={18} /> },
     { id: "questions", label: "Questions", icon: <HelpCircle size={18} /> }
   ];
 
