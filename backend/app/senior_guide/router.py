@@ -275,72 +275,7 @@ def submit_test(  background_tasks: BackgroundTasks,
             user_obj.role = "senior_guide"
 
 
-        # ================= REFERRAL AUTO CREDIT =================
-
-        if guide.referred_by and not guide.referral_paid:
-
-         
-
-            GUIDE_REWARD = 25
-            USER_REWARD = 50
-
-            referrer = db.query(SeniorGuide).filter(
-                SeniorGuide.id == guide.referred_by
-            ).first()
-
-            if referrer:
-
-                # credit referrer wallet
-                referrer.wallet_balance += GUIDE_REWARD
-                referrer.referral_bonus += GUIDE_REWARD
-
-                db.add(WalletTransaction(
-                    guide_id=referrer.id,
-                    amount=GUIDE_REWARD,
-                    type="credit",
-                    remark="Referral bonus earned"
-                ))
-
-                # credit new guide wallet
-                guide.wallet_balance += USER_REWARD
-
-                db.add(WalletTransaction(
-                    guide_id=guide.id,
-                    amount=USER_REWARD,
-                    type="credit",
-                    remark="Referral signup reward"
-                ))
-
-                # update referral table status
-                referral = db.query(Referral).filter(
-                    Referral.referred_user_id == guide.user_id,
-                    Referral.status == "PENDING"
-                ).first()
-
-                if referral:
-                    referral.status = "APPROVED"
-
-                # prevent duplicate future credits
-                guide.referral_paid = True
-                # 🔔 Notification for NEW GUIDE
-                background_tasks.add_task(
-                    create_notification,
-                        db,
-                        user["user_id"],
-                        "Referral Bonus Received",
-                        "₹50 credited to your wallet"
-                    
-                )
-
-                # 🔔 Notification for REFERRER GUIDE
-                background_tasks.add_task(
-                    create_notification,
-                        db,
-                        referrer.user_id,
-                        "Referral Bonus Earned",
-                        "₹25 credited to your wallet"
-                    
-                )
+        
         
     elif guide.attempts >= 3:
             guide.status = "REJECTED"
