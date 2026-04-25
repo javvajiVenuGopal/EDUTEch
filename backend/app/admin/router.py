@@ -921,9 +921,9 @@ def get_guide_documents(
         raise HTTPException(404, "Guide not found")
 
     return {
-        "aadhaar": guide.aadhaar_file,
-        "college_id": guide.college_id_file,
-        "hall_ticket": guide.hall_ticket_file
+        "aadhaar": guide.aadhaar_path,
+        "college_id": guide.college_id_card_path,
+        "hall_ticket": guide.hall_ticket_path
     }
 
 from fastapi.responses import FileResponse
@@ -955,9 +955,9 @@ def guide_details(
         "attempts": guide.attempts,
         "wallet": guide.wallet_balance,
         "status": guide.status,
-        "aadhaar": guide.aadhaar_file,
-        "college_id": guide.college_id_file,
-        "hall_ticket": guide.hall_ticket_file,
+        "aadhaar": guide.aadhaar_path,
+        "college_id": guide.college_id_card_path,
+        "hall_ticket": guide.hall_ticket_path,
         "verified_by": guide.verified_by,
         "verified_at": guide.verified_at
     }
