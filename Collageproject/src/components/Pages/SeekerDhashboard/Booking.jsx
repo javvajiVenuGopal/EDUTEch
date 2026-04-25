@@ -196,7 +196,7 @@ function BookingPage() {
 
             <User size={14} className="inline mr-1" />
 
-            {guide.unique_id || "Guide"}
+            {guide.guide_unique_id || "Guide"}
 
           </p>
 
