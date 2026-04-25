@@ -24,6 +24,7 @@ class CallSession(Base):
     reconnect_attempts = Column(Integer, default=0)
 
     refund_flag = Column(Boolean, default=False)
+    refund_reason = Column(String, nullable=True)
 
     created_at = Column(DateTime, default=datetime.utcnow)
 
