@@ -18,6 +18,7 @@ class WalletTransaction(Base):
 
     type = Column(String)
     # CALL_EARNING / REFERRAL / WITHDRAW / BONUS
+    call_id = Column(Integer, nullable=True)
 
     booking_id = Column(Integer, nullable=True)
 
