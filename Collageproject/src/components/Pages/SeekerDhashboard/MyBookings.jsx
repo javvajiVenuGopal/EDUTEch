@@ -386,8 +386,8 @@ function MyBookings() {
                 
                 {/* Card Footer with Actions */}
                 <div className="px-6 pb-6">
-                 {booking.payment_status === "PENDING" &&
-!isRefundEligible(booking.time_slot) &&(
+                {booking.payment_status === "PENDING" &&
+ booking.status !== "CANCELLED" && (
                     <button
                       onClick={() => handleContinuePayment(booking.id)}
                       disabled={processingPayment === booking.id}
@@ -408,6 +408,7 @@ function MyBookings() {
                   )}
 
 {booking.status === "CONFIRMED" &&
+ !booking.refund_flag &&
  !isRefundEligible(booking.time_slot) && (
                     <button
                       onClick={() => handleJoinCall(booking.id)}
@@ -428,7 +429,8 @@ function MyBookings() {
                     </button>
                   )}
                   {booking.status === "CONFIRMED" &&
- isSessionExpired(booking.time_slot) && (
+ booking.payment_status === "PAID" &&
+ (booking.refund_flag || isRefundEligible(booking.time_slot)) && (
   <button
     onClick={() => handleRefund(booking.id)}
     className="w-full bg-gradient-to-r from-rose-500 to-rose-600 hover:from-rose-600 hover:to-rose-700 text-white py-3 rounded-xl font-medium transition-all duration-200 flex items-center justify-center gap-2 shadow-md"
