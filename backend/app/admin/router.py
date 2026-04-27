@@ -53,7 +53,7 @@ def admin_login(
         raise HTTPException(401, "Invalid password")
 
     token = create_token({
-        "user_id": 0,
+        "user_id": admin.id,
         "email": admin.email,
         "role": admin.role
     })
@@ -828,7 +828,7 @@ def get_user_details(
 
     return {
         "id": target.id,
-        "name": target.name,
+        "name": target.full_name,
         "email": target.email,
         "role": target.role,
         "status": "active" if target.is_active else "suspended"
@@ -889,7 +889,7 @@ def filter_users_by_status(
     else:
         raise HTTPException(400, "Invalid status")
 
-    return users
+    return [     {         "id": u.id,         "name": u.full_name,         "email": u.email,         "role": u.role     }     for u in users ]
 
 
 @router.get("/users/role/{role}")
@@ -902,7 +902,7 @@ def filter_users_by_role(
 
     users = db.query(User).filter(User.role == role).all()
 
-    return users
+    return [     {         "id": u.id,         "name": u.full_name,         "email": u.email,         "role": u.role     }     for u in users ]
 
 @router.get("/guides/documents/{guide_id}")
 def get_guide_documents(
