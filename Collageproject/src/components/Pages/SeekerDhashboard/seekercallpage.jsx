@@ -41,8 +41,7 @@ ringtoneRef.current && (ringtoneRef.current.currentTime = 0);
     audio: true
   });
 
-  await createCallSession(booking_id); 
-
+ 
 
   const tokenData =
     await getCallToken(booking_id);
