@@ -33,11 +33,7 @@ function GuideList() {
   const [college] = useState("");
   const [branch] = useState("");
 
-  const fetchGuides = async () => {
 
-    try {
-
-      
 
   
   useEffect(() => {
