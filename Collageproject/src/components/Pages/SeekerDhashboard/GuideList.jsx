@@ -37,38 +37,9 @@ function GuideList() {
 
     try {
 
-      const response = await searchGuides(
-        college,
-        branch
-      );
-
-      console.log("Guides:", response.data);
-
-      setGuides(response.data);
       
-      // Extract unique colleges and branches for filters
-      const uniqueColleges = [...new Set(response.data.map(g => g.college_name).filter(Boolean))];
-      const uniqueBranches = [...new Set(response.data.map(g => g.branch).filter(Boolean))];
-      setColleges(uniqueColleges);
-      setBranches(uniqueBranches);
 
-      setLoading(false);
-
-    } catch (error) {
-
-      console.log(error);
-
-      setLoading(false);
-
-    }
-
-  };
-
-  useEffect(() => {
-
-    fetchGuides();
-
-  }, []);
+  
   useEffect(() => {
   fetchGuides();
 }, [selectedBranch]);
