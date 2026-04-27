@@ -138,6 +138,7 @@ def verify_otp(
 
 
     user.is_verified = True
+    user.last_seen = datetime.utcnow()
     user.otp = None
     user.otp_expiry = None
 
@@ -255,3 +256,41 @@ def get_profile(
         "user_id": user.id,
         "role": user.role
     }
+
+
+
+
+@router.post("/ping")
+def update_last_seen(
+    db: Session = Depends(get_db),
+    current_user=Depends(get_current_user)
+):
+
+    user = db.query(User).filter(
+        User.id == current_user["user_id"]
+    ).first()
+
+    if user:
+        user.last_seen = datetime.utcnow()
+        db.commit()
+
+    return {"message": "updated"}
+
+from datetime import timedelta
+
+@router.get("/status/{user_id}")
+def user_status(user_id: int, db: Session = Depends(get_db)):
+
+    user = db.query(User).filter(
+        User.id == user_id
+    ).first()
+
+    if not user:
+        raise HTTPException(404)
+
+    online = False
+
+    if user.last_seen:
+        online = user.last_seen > datetime.utcnow() - timedelta(minutes=2)
+
+    return {"online": online}
