@@ -435,6 +435,7 @@ from app.booking.models import Booking
 # ✅ CREATE REFUND REQUEST (SEEKER)
 
 from datetime import datetime, timedelta
+from datetime import datetime, timedelta
 
 @router.post("/refund/request/{booking_id}")
 def create_refund_request(
@@ -452,18 +453,28 @@ def create_refund_request(
     if not booking:
         raise HTTPException(404, "Booking not found")
 
+    # refund only if payment completed
     if booking.payment_status != "PAID":
-        raise HTTPException(400, "Payment not completed")
+        raise HTTPException(
+            400,
+            "Refund already requested or payment not completed"
+        )
 
-    # prevent duplicate request
+    # block duplicate refund request
     existing = db.query(RefundRequest).filter(
         RefundRequest.booking_id == booking_id
     ).first()
 
     if existing:
-        raise HTTPException(400, "Refund already requested")
+        raise HTTPException(
+            400,
+            "Refund already requested"
+        )
 
-    booking_time = datetime.fromisoformat(booking.time_slot)
+    booking_time = datetime.fromisoformat(
+        booking.time_slot
+    )
+
     now = datetime.utcnow()
 
     refund_allowed_time = booking_time + timedelta(minutes=10)
@@ -475,17 +486,23 @@ def create_refund_request(
             "Refund allowed only after 10 minutes from session start"
         )
 
-    # block completed sessions
+    # block completed calls (unless short call)
     if booking.status == "COMPLETED" and not booking.refund_flag:
         raise HTTPException(
             400,
             "Call completed successfully. Refund not allowed"
         )
 
+    # allow refund if short duration call
+    if booking.refund_flag:
+        reason = "Call duration less than 5 minutes"
+    else:
+        reason = data.reason
+
     refund = RefundRequest(
         booking_id=booking_id,
         user_id=user["user_id"],
-        reason=data.reason,
+        reason=reason,
         status="PENDING"
     )
 
@@ -495,8 +512,9 @@ def create_refund_request(
 
     db.commit()
 
-    return {"message": "Refund request submitted"}
-
+    return {
+        "message": "Refund request submitted successfully"
+    }
 @router.get("/refund/status/{booking_id}")
 def get_refund_status(
     booking_id: int,
