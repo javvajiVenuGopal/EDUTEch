@@ -123,13 +123,10 @@ function SlotSelection() {
 
   const handleContinue = () => {
 
-    if (!selectedSlot) {
-
-      toast.success("Please select a time slot");
-
-      return;
-
-    }
+   if (!selectedSlot || new Date(selectedSlot.start_time) < new Date()) {
+  toast.error("This slot is no longer available");
+  return;
+}
 
     navigate("/bookings", {
       state: {
@@ -250,6 +247,11 @@ function SlotSelection() {
             ) : (
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
                 {availableSlots.map((slot) => {
+                const now = new Date();
+
+                const slotStartTime = new Date(slot.start_time);
+                
+                const isExpired = slotStartTime < now;
 
                   const isBooked = bookedSlots.some(
                     (booked) =>
@@ -262,11 +264,11 @@ function SlotSelection() {
 
                     <button
                       key={slot.id}
-                      disabled={isBooked}
+                      disabled={isBooked || isExpired}
                       onClick={() => setSelectedSlot(slot)}
                       className={`
                         relative p-4 rounded-xl border-2 transition-all duration-200 text-left
-                        ${isBooked 
+                        ${isBooked || isExpired 
                           ? "bg-gray-100 border-gray-200 cursor-not-allowed opacity-60" 
                           : isSelected
                           ? "border-[#ff6b35] shadow-md"
@@ -302,11 +304,12 @@ function SlotSelection() {
                       </div>
 
                       {/* Booked Badge */}
-                      {isBooked && (
-                        <div className="mt-2 flex items-center gap-1">
-                          <XCircle className="w-3 h-3" style={{ color: "#ef4444" }} />
-                          <span className="text-xs" style={{ color: "#ef4444" }}>Booked</span>
-                        </div>
+                      {{isExpired && (
+  <div className="mt-2 flex items-center gap-1">
+    <XCircle className="w-3 h-3 text-gray-500" />
+    <span className="text-xs text-gray-500">Expired</span>
+  </div>
+)}
                       )}
                     </button>
 
