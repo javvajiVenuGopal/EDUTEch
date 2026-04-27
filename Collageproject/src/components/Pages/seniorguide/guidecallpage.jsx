@@ -42,7 +42,7 @@ function GuideCallPage() {
 
 setCallId(session.session_id);
 
-    await startCallAPI(booking_id);
+  
 
     const tokenData =
       await getCallToken(booking_id);
