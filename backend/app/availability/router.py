@@ -95,7 +95,8 @@ def get_slots(
 
     return db.query(AvailabilitySlot).filter(
         AvailabilitySlot.guide_id == guide_id,
-        AvailabilitySlot.is_booked == False
+        AvailabilitySlot.is_booked == False,
+AvailabilitySlot.start_time > datetime.utcnow()
     ).all()
 
 
@@ -142,8 +143,21 @@ def book_slot(
     if not slot:
         raise HTTPException(404, "Slot not found")
 
+    now = datetime.utcnow()
+
+    if slot.start_time.replace(tzinfo=None) <= now:
+        raise HTTPException(400, "Slot time already expired")
+    
     if slot.is_booked:
         raise HTTPException(400, "Slot already booked")
+    existing_booking = db.query(Booking).filter(
+    Booking.seeker_id == user["user_id"],
+    Booking.time_slot == str(slot.start_time),
+    Booking.status.in_(["CONFIRMED", "COMPLETED"])
+    ).first()
+    
+    if existing_booking:
+        raise HTTPException(400, "Booking already exists")
 
     slot.is_booked = True
 
