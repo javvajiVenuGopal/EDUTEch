@@ -166,6 +166,12 @@ async def start_call(background_tasks: BackgroundTasks,
         raise HTTPException(404, "Booking not found")
 
     booking.call_status = "STARTED"
+    call_session = db.query(CallSession).filter(
+    CallSession.booking_id == booking_id
+    ).first()
+
+    if call_session:
+        call_session.start_time = datetime.utcnow()
     db.commit()
 
     guide = db.query(SeniorGuide).filter(
@@ -236,6 +242,8 @@ async def end_call(
 
     if call_session:
         call_session.status = "COMPLETED"
+    if call_session:
+        call_session.end_time = datetime.utcnow()
     if call_session and call_session.start_time and call_session.end_time:
 
         duration = (
