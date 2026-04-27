@@ -263,11 +263,22 @@ loadData();
 };
 
   // ================= USERS =================
-  const handleSuspendUser = async (id) => {
+const handleSuspendUser = async (id) => {
+
+  if (!id) {
+    toast.error("Invalid user id");
+    return;
+  }
+
+  try {
     await suspendUser(id);
-toast.error("User suspended ");
-loadData();
-  };
+    toast.error("User suspended 🚫");
+    loadData();
+  } catch (err) {
+    console.error(err);
+    toast.error("Suspend failed");
+  }
+};
   const handleActivateUser = async (id) => {
     await activateUser(id);
 toast.success("User activated ");
