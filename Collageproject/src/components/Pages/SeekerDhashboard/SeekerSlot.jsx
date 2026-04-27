@@ -304,13 +304,13 @@ function SlotSelection() {
                       </div>
 
                       {/* Booked Badge */}
-                      {{isExpired && (
+                      {isExpired && (
   <div className="mt-2 flex items-center gap-1">
     <XCircle className="w-3 h-3 text-gray-500" />
     <span className="text-xs text-gray-500">Expired</span>
   </div>
 )}
-                      )}
+                      
                     </button>
 
                   );
