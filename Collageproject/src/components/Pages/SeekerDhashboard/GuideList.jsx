@@ -233,6 +233,13 @@ function GuideList() {
                     </div>
                     <div>
                       <h3 className="text-white font-bold text-lg">{guide.guide_unique_id || "Senior Guide"}</h3>
+                      <div className="text-xs mt-1">
+  {guide.online ? (
+    <span className="text-green-300">● Online</span>
+  ) : (
+    <span className="text-gray-200">● Offline</span>
+  )}
+</div>
                       <p className="text-orange-100 text-sm capitalize">{guide.role || "Academic Guide"}</p>
                     </div>
                   </div>
