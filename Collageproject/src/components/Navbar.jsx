@@ -61,7 +61,7 @@ useEffect(() => {
       if (!token) return;
 
       const res = await fetch(
-        "https://edutech-k9zs.onrender.com/notifications/unread-count",
+        "https://backend.exameets.in/notifications/unread-count",
         {
           headers: {
             Authorization: `Bearer ${token}`
