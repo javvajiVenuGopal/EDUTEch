@@ -15,5 +15,6 @@ class User(Base):
     otp = Column(String, nullable=True)
     otp_expiry = Column(DateTime, nullable=True)
     is_verified = Column(Boolean, default=False)
+    last_seen = Column(DateTime, nullable=True)
 
     created_at = Column(DateTime, default=datetime.utcnow)
