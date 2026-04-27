@@ -122,15 +122,7 @@ function MyBookings() {
     return () => socket?.close();
 
   }, []);
-  const isSessionExpired = (timeSlot) => {
 
-  const slotTime = new Date(timeSlot);
-
-  const now = new Date();
-
-  return now > slotTime;
-
-};
 
   // ✅ Continue payment
   const handleContinuePayment = async (bookingId) => {
@@ -232,6 +224,15 @@ function MyBookings() {
       CANCELLED: { color: "bg-rose-50 text-rose-700 border-rose-200", icon: <XCircle size={12} />, text: "Cancelled" },
       IN_PROGRESS: { color: "bg-purple-50 text-purple-700 border-purple-200", icon: <PhoneCall size={12} />, text: "In Progress" }
     };
+    const isRefundEligible = (timeSlot) => {
+  const slotTime = new Date(timeSlot);
+
+  const refundTime = new Date(
+    slotTime.getTime() + 10 * 60000
+  );
+
+  return new Date() > refundTime;
+};
     
     const config = statusConfig[status] || statusConfig.PENDING;
     
@@ -386,7 +387,7 @@ function MyBookings() {
                 {/* Card Footer with Actions */}
                 <div className="px-6 pb-6">
                  {booking.payment_status === "PENDING" &&
- !isSessionExpired(booking.time_slot) &&(
+!isRefundEligible(booking.time_slot) &&(
                     <button
                       onClick={() => handleContinuePayment(booking.id)}
                       disabled={processingPayment === booking.id}
@@ -406,7 +407,8 @@ function MyBookings() {
                     </button>
                   )}
 
-                  {booking.status === "CONFIRMED" && (
+{booking.status === "CONFIRMED" &&
+ !isRefundEligible(booking.time_slot) && (
                     <button
                       onClick={() => handleJoinCall(booking.id)}
                       disabled={joiningCall === booking.id}
@@ -425,6 +427,15 @@ function MyBookings() {
                       )}
                     </button>
                   )}
+                  {booking.status === "CONFIRMED" &&
+ isSessionExpired(booking.time_slot) && (
+  <button
+    onClick={() => handleRefund(booking.id)}
+    className="w-full bg-gradient-to-r from-rose-500 to-rose-600 hover:from-rose-600 hover:to-rose-700 text-white py-3 rounded-xl font-medium transition-all duration-200 flex items-center justify-center gap-2 shadow-md"
+  >
+    Refund Amount
+  </button>
+)}
 
                   {booking.status === "COMPLETED" && (
                     <div className="flex items-center justify-center gap-2 py-3 bg-emerald-50 rounded-xl">
