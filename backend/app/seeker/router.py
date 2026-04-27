@@ -120,6 +120,13 @@ from sqlalchemy import func
 from sqlalchemy import func
 from fastapi import Depends, Query
 from app.auth.utils import get_current_user
+from datetime import datetime, timedelta
+
+def is_online(last_seen):
+    if not last_seen:
+        return False
+    return last_seen > datetime.utcnow() - timedelta(minutes=2)
+
 
 @router.get("/guides/search")
 def search_guides(
@@ -150,13 +157,14 @@ def search_guides(
     guides = query.all()
 
     return [
-        {
-            "id": g.id,
-            "guide_unique_id": g.unique_id,
-            "college_name": g.college_name,
-            "branch": g.branch,
-            "rating": g.rating,
-            "total_calls": g.total_calls
-        }
-        for g in guides
-    ]
+    {
+        "id": g.id,
+        "guide_unique_id": g.unique_id,
+        "college_name": g.college_name,
+        "branch": g.branch,
+        "rating": g.rating,
+        "total_calls": g.total_calls,
+        "online": is_online(g.user.last_seen)
+    }
+    for g in guides
+]
