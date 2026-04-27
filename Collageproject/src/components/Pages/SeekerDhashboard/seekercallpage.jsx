@@ -4,7 +4,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import {
   createCallSession,
   getCallToken,
-  endCallAPI,startCallAPI 
+  endCallAPI 
 } from "../../../Service/callService";
 
 import {
@@ -42,7 +42,7 @@ ringtoneRef.current && (ringtoneRef.current.currentTime = 0);
   });
 
   await createCallSession(booking_id); 
-   await startCallAPI(booking_id);
+
 
   const tokenData =
     await getCallToken(booking_id);
