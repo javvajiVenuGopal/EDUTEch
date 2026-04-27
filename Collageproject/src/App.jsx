@@ -70,6 +70,16 @@ function App() {
   const navigate = useNavigate();
   useEffect(() => {
 
+    const interval = setInterval(() => {
+      axiosInstance.post("/auth/ping");
+    }, 60000);
+
+    return () => clearInterval(interval);
+
+  }, []);
+  
+  useEffect(() => {
+
   const socket = connectNotificationSocket((data) => {
 
     console.log("🔔 Notification:", data);
