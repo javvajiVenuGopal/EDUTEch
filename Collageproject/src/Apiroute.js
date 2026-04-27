@@ -277,7 +277,7 @@ export const getBookingStatus = (bookingId) =>
 
 export const connectCallSocket = (userId, onMessage) => {
   const socket = new WebSocket(
-    `wss://edutech-k9zs.onrender.com/call/ws/call/${userId}`
+    `wss://backend.exameets.in/call/ws/call/${userId}`
   );
 
   socket.onopen = () => {
@@ -423,7 +423,7 @@ export const connectNotificationSocket = (onMessage) => {
   if (!token) return null;
 
   const socket = new WebSocket(
-    `wss://edutech-k9zs.onrender.com/notifications/ws/notifications?token=${token}`
+    `wss://backend.exameets.in/notifications/ws/notifications?token=${token}`
   );
 
   socket.onopen = () => {
