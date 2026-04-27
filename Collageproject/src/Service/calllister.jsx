@@ -1,4 +1,4 @@
-const BASEURL = "https://edutech-k9zs.onrender.com";
+const BASEURL = "https://backend.exameets.in";
 
 export const connectIncomingCallSocket = (
   userId,
