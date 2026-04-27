@@ -66,6 +66,7 @@ import {
   closeNotificationSocket
 } from "./Service/notificationsocket";
 import NotFound from "./components/Pages/NotFound";
+import axiosInstance from "./baseapi";
 function App() {
   const navigate = useNavigate();
   useEffect(() => {
