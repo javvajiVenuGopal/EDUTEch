@@ -434,6 +434,8 @@ from app.booking.models import Booking
 
 # ✅ CREATE REFUND REQUEST (SEEKER)
 
+from datetime import datetime, timedelta
+
 @router.post("/refund/request/{booking_id}")
 def create_refund_request(
     booking_id: int,
@@ -453,12 +455,32 @@ def create_refund_request(
     if booking.payment_status != "PAID":
         raise HTTPException(400, "Payment not completed")
 
+    # prevent duplicate request
     existing = db.query(RefundRequest).filter(
         RefundRequest.booking_id == booking_id
     ).first()
 
     if existing:
         raise HTTPException(400, "Refund already requested")
+
+    booking_time = datetime.fromisoformat(booking.time_slot)
+    now = datetime.utcnow()
+
+    refund_allowed_time = booking_time + timedelta(minutes=10)
+
+    # allow refund only after 10 minutes
+    if now < refund_allowed_time:
+        raise HTTPException(
+            400,
+            "Refund allowed only after 10 minutes from session start"
+        )
+
+    # block completed sessions
+    if booking.status == "COMPLETED" and not booking.refund_flag:
+        raise HTTPException(
+            400,
+            "Call completed successfully. Refund not allowed"
+        )
 
     refund = RefundRequest(
         booking_id=booking_id,
@@ -472,19 +494,6 @@ def create_refund_request(
     booking.payment_status = "REFUND_REQUESTED"
 
     db.commit()
-  
-    guide = db.query(SeniorGuide).filter(
-    SeniorGuide.id == booking.guide_id
-).first()
-
-    background_tasks.add_task(
-        create_notification,
-            db,
-            guide.user_id,
-            "Refund Requested",
-            "A seeker requested refund for a session"
-        
-    )
 
     return {"message": "Refund request submitted"}
 
