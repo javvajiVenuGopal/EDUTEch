@@ -20,7 +20,7 @@ export const connectNotificationSocket = (onMessage) => {
   }
 
   notificationSocket = new WebSocket(
-    `wss://edutech-k9zs.onrender.com/notifications/ws/notifications?token=${token}`
+    `wss://backend.exameets.in/notifications/ws/notifications?token=${token}`
   );
 
   notificationSocket.onopen = () => {
