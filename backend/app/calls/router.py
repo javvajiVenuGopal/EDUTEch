@@ -120,19 +120,19 @@ def get_agora_token(
 
     now = datetime.utcnow()
 
-    # block early join
-    if now < session_start_time:
-        raise HTTPException(
-            400,
-            "Call session not started yet"
-        )
+    # # block early join
+    # if now < session_start_time:
+    #     raise HTTPException(
+    #         400,
+    #         "Call session not started yet"
+    #     )
 
-    # block late join
-    if now > session_end_time:
-        raise HTTPException(
-            400,
-            "Call session expired"
-        )
+    # # block late join
+    # if now > session_end_time:
+    #     raise HTTPException(
+    #         400,
+    #         "Call session expired"
+    #     )
 
     # -----------------------------------------
     # GENERATE TOKEN
