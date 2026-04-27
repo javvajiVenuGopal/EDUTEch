@@ -40,7 +40,7 @@ function GuideCallPage() {
 
     const session = await createCallSession(booking_id);
 
-setCallId(session.call_id);
+setCallId(session.session_id);
 
     await startCallAPI(booking_id);
 
