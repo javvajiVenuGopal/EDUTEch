@@ -638,10 +638,12 @@ export const updateSeekerProfile = (formData) =>
 // ================= SEARCH GUIDES =================
 
 // SEARCH GUIDES BY COLLEGE + BRANCH
-export const searchGuides = (college, branch) =>
-  axiosInstance.get(
-    `/seeker/guides/search?college=${college}&branch=${branch}`
-  );
+export const searchGuides = (branch = null) => {
+  if (branch) {
+    return axiosInstance.get(`/seeker/guides/search?branch=${branch}`);
+  }
+  return axiosInstance.get(`/seeker/guides/search`);
+};
 
 
    
