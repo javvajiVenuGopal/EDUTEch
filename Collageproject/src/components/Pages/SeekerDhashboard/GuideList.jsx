@@ -24,9 +24,9 @@ function GuideList() {
   const [guides, setGuides] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
-  const [selectedCollege, setSelectedCollege] = useState("");
+  
   const [selectedBranch, setSelectedBranch] = useState("");
-  const [colleges, setColleges] = useState([]);
+ 
   const [branches, setBranches] = useState([]);
 
   // Optional filters (later dynamic ga set cheyyachu)
@@ -69,19 +69,42 @@ function GuideList() {
     fetchGuides();
 
   }, []);
+  useEffect(() => {
+  fetchGuides();
+}, [selectedBranch]);
 
   // Filter guides based on search and filters
+  const fetchGuides = async () => {
+  try {
+    const response = await searchGuides(selectedBranch);
+
+    setGuides(response.data);
+
+    const uniqueBranches = [
+      ...new Set(response.data.map(g => g.branch).filter(Boolean))
+    ];
+
+    setBranches(uniqueBranches);
+
+    setLoading(false);
+
+  } catch (error) {
+    console.log(error);
+    setLoading(false);
+  }
+};
   const filteredGuides = guides.filter(guide => {
-    const matchesSearch = searchTerm === "" || 
-      guide.full_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      guide.guide_unique_id?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      guide.college_name?.toLowerCase().includes(searchTerm.toLowerCase());
-    
-    const matchesCollege = selectedCollege === "" || guide.college_name === selectedCollege;
-    const matchesBranch = selectedBranch === "" || guide.branch === selectedBranch;
-    
-    return matchesSearch && matchesCollege && matchesBranch;
-  });
+  const matchesSearch =
+    searchTerm === "" ||
+    guide.guide_unique_id?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    guide.college_name?.toLowerCase().includes(searchTerm.toLowerCase());
+
+  const matchesBranch =
+    selectedBranch === "" ||
+    guide.branch === selectedBranch;
+
+  return matchesSearch && matchesBranch;
+});
 
   // Function to get rating stars
   const getRatingStars = (rating) => {
@@ -125,7 +148,7 @@ function GuideList() {
               />
             </div>
             
-            {/* College Filter */}
+            /* {/* College Filter */}
             <div className="relative">
               <GraduationCap className="absolute left-3 top-1/2 -translate-y-1/2 text-[#545454]/40" size={18} />
               <select
@@ -138,7 +161,7 @@ function GuideList() {
                   <option key={idx} value={col}>{col}</option>
                 ))}
               </select>
-            </div>
+            </div> */
             
             {/* Branch Filter */}
             <div className="relative">
@@ -164,7 +187,7 @@ function GuideList() {
             <button 
               onClick={() => {
                 setSearchTerm("");
-                setSelectedCollege("");
+               
                 setSelectedBranch("");
               }}
               className="text-sm text-[#ff6b35] hover:text-[#e55a2b] transition-colors"
