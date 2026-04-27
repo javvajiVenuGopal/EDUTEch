@@ -117,14 +117,37 @@ def update_profile(background_tasks: BackgroundTasks,
 
 from sqlalchemy import func
 
-@router.get("/guides/search")
-def search_guides(college: str, branch: str, db: Session = Depends(get_db)):
+from sqlalchemy import func
+from fastapi import Depends, Query
+from app.auth.utils import get_current_user
 
-    guides = db.query(SeniorGuide).filter(
-        func.lower(SeniorGuide.college_name).like(f"%{college.lower()}%"),
-        func.lower(SeniorGuide.branch).like(f"%{branch.lower()}%"),
+@router.get("/guides/search")
+def search_guides(
+    branch: str | None = Query(default=None),
+    db: Session = Depends(get_db),
+    current_user=Depends(get_current_user)
+):
+
+    seeker_profile = db.query(SeekerProfile).filter(
+        SeekerProfile.user_id == current_user["user_id"]
+    ).first()
+
+    if not seeker_profile or not seeker_profile.college:
+        return []
+
+    # Step 1: same college guides (default)
+    query = db.query(SeniorGuide).filter(
+        func.lower(SeniorGuide.college_name) == seeker_profile.college.lower(),
         SeniorGuide.status == "ACTIVE"
-    ).all()
+    )
+
+    # Step 2: optional branch filter
+    if branch:
+        query = query.filter(
+            func.lower(SeniorGuide.branch) == branch.lower()
+        )
+
+    guides = query.all()
 
     return [
         {
