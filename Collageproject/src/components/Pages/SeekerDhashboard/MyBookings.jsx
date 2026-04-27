@@ -169,7 +169,15 @@ function MyBookings() {
     }
 
   };
+ const isRefundEligible = (timeSlot) => {
+  const slotTime = new Date(timeSlot);
 
+  const refundTime = new Date(
+    slotTime.getTime() + 10 * 60000
+  );
+
+  return new Date() > refundTime;
+};
 
   // ✅ Join call (STOP ringtone here)
   const handleJoinCall = async (bookingId) => {
@@ -224,15 +232,7 @@ function MyBookings() {
       CANCELLED: { color: "bg-rose-50 text-rose-700 border-rose-200", icon: <XCircle size={12} />, text: "Cancelled" },
       IN_PROGRESS: { color: "bg-purple-50 text-purple-700 border-purple-200", icon: <PhoneCall size={12} />, text: "In Progress" }
     };
-    const isRefundEligible = (timeSlot) => {
-  const slotTime = new Date(timeSlot);
-
-  const refundTime = new Date(
-    slotTime.getTime() + 10 * 60000
-  );
-
-  return new Date() > refundTime;
-};
+   
     
     const config = statusConfig[status] || statusConfig.PENDING;
     
