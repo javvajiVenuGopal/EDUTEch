@@ -40,7 +40,8 @@ from fastapi.middleware.cors import CORSMiddleware
 
 origins = [
     "http://localhost:5173",
-    "https://edutech-1-b374.onrender.com"
+    "https://edutech-1-b374.onrender.com",
+    "https://backend.exameets.in"
 ]
 
 app.add_middleware(
