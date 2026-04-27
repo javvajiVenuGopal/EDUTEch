@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 
 import {
-  createCallSession,
+
   getCallToken,
   endCallAPI 
 } from "../../../Service/callService";
