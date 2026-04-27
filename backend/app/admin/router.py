@@ -802,7 +802,7 @@ def get_all_users(
 
     return [
         {
-            "_id": u.id,
+            "id": u.id,
             "name": u.full_name,
             "email": u.email,
             "mobile_number": u.mobile_number,
@@ -827,7 +827,7 @@ def get_user_details(
         raise HTTPException(404, "User not found")
 
     return {
-        "_id": target.id,
+        "id": target.id,
         "name": target.name,
         "email": target.email,
         "role": target.role,
