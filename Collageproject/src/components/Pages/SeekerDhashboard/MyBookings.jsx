@@ -122,6 +122,23 @@ function MyBookings() {
     return () => socket?.close();
 
   }, []);
+  const handleRefund = async (bookingId) => {
+  try {
+    toast.loading("Processing refund...");
+
+    // backend refund API call
+    await refundBooking(bookingId);
+
+    toast.dismiss();
+    toast.success("Refund requested successfully");
+
+    window.location.reload();
+  } catch (err) {
+    toast.dismiss();
+    toast.error("Refund failed");
+    console.error(err);
+  }
+};
 
 
   // ✅ Continue payment
