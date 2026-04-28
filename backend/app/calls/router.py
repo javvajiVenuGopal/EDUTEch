@@ -165,12 +165,14 @@ async def start_call(background_tasks: BackgroundTasks,
     if not booking:
         raise HTTPException(404, "Booking not found")
 
-    booking.call_status = "STARTED"
+    
     call_session = db.query(CallSession).filter(
     CallSession.booking_id == booking_id
     ).first()
 
     if call_session:
+        call_session.status = "STARTED"
+        booking.call_status = "STARTED"
         call_session.start_time = datetime.utcnow()
     db.commit()
 
