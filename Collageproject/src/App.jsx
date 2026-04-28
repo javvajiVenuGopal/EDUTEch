@@ -110,7 +110,7 @@ userId,
 
 if (data.type === "incoming_call") {
 
-navigate(`/seeker-call/${data.booking_id}`);
+setTimeout(() => {   navigate(`/seeker-call/${data.booking_id}`); }, 500);
 
 }
 
