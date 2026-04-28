@@ -59,7 +59,7 @@ const getRemainingTime = (timeSlot) => {
 
   try {
 
-    await startCall(call.id);   // 🔥 IMPORTANT
+   
 
     navigate(`/guide-call/${call.id}`);
 
