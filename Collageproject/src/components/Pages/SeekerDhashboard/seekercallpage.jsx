@@ -83,57 +83,45 @@ ringtoneRef.current && (ringtoneRef.current.currentTime = 0);
 };
 
 
-  useEffect(() => {
+useEffect(() => {
 
-    ringtoneRef.current =
-      new Audio("/ringtone.mp3");
+  ringtoneRef.current = new Audio("/ringtone.mp3");
 
-    const seekerId =
-      Number(localStorage.getItem("user_id"));
+  const seekerId = Number(localStorage.getItem("user_id"));
 
-    const socket = connectIncomingCallSocket(
-  seekerId,
-  (data) => {
+  const socket = connectIncomingCallSocket(
+    seekerId,
+    (data) => {
 
-    if (data.type === "incoming_call") {
+      if (data.type === "incoming_call") {
 
-      // different booking → redirect
-      if (Number(data.booking_id) !== Number(booking_id)) {
-
-        navigate(`/seeker-call/${data.booking_id}`);
-        return;
-
-      }
-
-      // same booking → play ringtone
-      ringtoneRef.current?.play().catch(() => {});
-
-    }
-
-    if (data.type === "call_ended") {
-
-      ringtoneRef.current?.pause();
-
-      if (ringtoneRef.current) {
-        ringtoneRef.current.currentTime = 0;
-      }
-
-      leaveCall();
-
-    }
-
-  }
-);
-
-  leaveCall();
-
-}
+        if (Number(data.booking_id) !== Number(booking_id)) {
+          navigate(`/seeker-call/${data.booking_id}`);
+          return;
         }
-      );
 
-    return () => socket?.close();
+        ringtoneRef.current?.play().catch(() => {});
 
-  }, []);
+      }
+
+      if (data.type === "call_ended") {
+
+        ringtoneRef.current?.pause();
+
+        if (ringtoneRef.current) {
+          ringtoneRef.current.currentTime = 0;
+        }
+
+        leaveCall();
+
+      }
+
+    }
+  );
+
+  return () => socket?.close();
+
+}, [booking_id]);
   useEffect(() => {
 
   if (!joined) return;
