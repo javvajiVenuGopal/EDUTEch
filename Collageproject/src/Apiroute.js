@@ -75,6 +75,10 @@ export const getRefundRequests = () =>
 export const processRefund = (bookingId, action) =>
   axiosInstance.put(`/admin/refund/${bookingId}?action=${action}`);
 
+// SEEKER: REQUEST REFUND
+export const refundBooking = (bookingId) =>
+  axiosInstance.post(`/booking/refund/${bookingId}`);
+
 
 
 // ================= WITHDRAW MANAGEMENT =================
