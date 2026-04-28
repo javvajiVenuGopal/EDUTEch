@@ -142,29 +142,31 @@ def search_guides(
     if not seeker_profile or not seeker_profile.college:
         return []
 
-    # Step 1: same college guides (default)
+    # same college guides (case-insensitive + spelling tolerant)
     query = db.query(SeniorGuide).filter(
-        func.lower(SeniorGuide.college_name) == seeker_profile.college.lower(),
+        func.lower(SeniorGuide.college_name).ilike(
+            f"%{seeker_profile.college.lower()}%"
+        ),
         SeniorGuide.status == "ACTIVE"
     )
 
-    # Step 2: optional branch filter
+    # optional branch filter
     if branch:
         query = query.filter(
-            func.lower(SeniorGuide.branch) == branch.lower()
+            func.lower(SeniorGuide.branch).ilike(f"%{branch.lower()}%")
         )
 
     guides = query.all()
 
     return [
-    {
-        "id": g.id,
-        "guide_unique_id": g.unique_id,
-        "college_name": g.college_name,
-        "branch": g.branch,
-        "rating": g.rating,
-        "total_calls": g.total_calls,
-        "online": is_online(g.user.last_seen)
-    }
-    for g in guides
-]
+        {
+            "id": g.id,
+            "guide_unique_id": g.unique_id,
+            "college_name": g.college_name,
+            "branch": g.branch,
+            "rating": g.rating,
+            "total_calls": g.total_calls,
+            "online": is_online(g.user.last_seen) if g.user else False
+        }
+        for g in guides
+    ]
