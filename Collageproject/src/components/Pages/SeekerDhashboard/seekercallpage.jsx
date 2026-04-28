@@ -91,27 +91,39 @@ ringtoneRef.current && (ringtoneRef.current.currentTime = 0);
     const seekerId =
       Number(localStorage.getItem("user_id"));
 
-    const socket =
-      connectIncomingCallSocket(
-        seekerId,
-        data => {
-if (data.type === "incoming_call") {
+    const socket = connectIncomingCallSocket(
+  seekerId,
+  (data) => {
 
-  if (Number(data.booking_id) !== Number(booking_id)) {
-    navigate(`/seeker-call/${data.booking_id}`);
-    return;
+    if (data.type === "incoming_call") {
+
+      // different booking → redirect
+      if (Number(data.booking_id) !== Number(booking_id)) {
+
+        navigate(`/seeker-call/${data.booking_id}`);
+        return;
+
+      }
+
+      // same booking → play ringtone
+      ringtoneRef.current?.play().catch(() => {});
+
+    }
+
+    if (data.type === "call_ended") {
+
+      ringtoneRef.current?.pause();
+
+      if (ringtoneRef.current) {
+        ringtoneRef.current.currentTime = 0;
+      }
+
+      leaveCall();
+
+    }
+
   }
-
-   ringtoneRef.current?.play();
-}
-         if (data.type === "call_ended") {
-
-  if (ringtoneRef.current) {
-
-    ringtoneRef.current?.pause();
-ringtoneRef.current && (ringtoneRef.current.currentTime = 0);
-
-  }
+);
 
   leaveCall();
 
