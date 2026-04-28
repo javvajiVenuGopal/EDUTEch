@@ -115,20 +115,7 @@ function GuideList() {
               />
             </div>
             
-             {/* College Filter */}
-            /*<div className="relative">
-              <GraduationCap className="absolute left-3 top-1/2 -translate-y-1/2 text-[#545454]/40" size={18} />
-              <select
-                value={selectedCollege}
-                onChange={(e) => setSelectedCollege(e.target.value)}
-                className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#ff6b35]/30 focus:border-[#ff6b35] transition-all bg-[#fffbed]/50 appearance-none cursor-pointer text-[#545454]"
-              >
-                <option value="">All Colleges</option>
-                {colleges.map((col, idx) => (
-                  <option key={idx} value={col}>{col}</option>
-                ))}
-              </select>
-            </div> */
+            
             
             {/* Branch Filter */}
             <div className="relative">
