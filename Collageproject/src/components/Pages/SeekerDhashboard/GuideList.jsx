@@ -30,7 +30,7 @@ function GuideList() {
   const [branches, setBranches] = useState([]);
 
   // Optional filters (later dynamic ga set cheyyachu)
-  const [college] = useState("");
+  // const [college] = useState("");
   const [branch] = useState("");
 
 
@@ -115,8 +115,8 @@ function GuideList() {
               />
             </div>
             
-            /* {/* College Filter */}
-            <div className="relative">
+             {/* College Filter */}
+            /*<div className="relative">
               <GraduationCap className="absolute left-3 top-1/2 -translate-y-1/2 text-[#545454]/40" size={18} />
               <select
                 value={selectedCollege}
