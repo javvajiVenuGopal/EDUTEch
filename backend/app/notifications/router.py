@@ -179,7 +179,7 @@ def broadcast_notification(  background_tasks: BackgroundTasks,
 
         background_tasks.add_task(
             create_notification,
-            db,
+        
             u.id,
             title,
             message
