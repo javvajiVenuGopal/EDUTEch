@@ -64,7 +64,7 @@ def college_form(  background_tasks: BackgroundTasks,
     db.commit()
     background_tasks.add_task(
     create_notification,
-        db,
+        
         user["user_id"],
         "Profile Created",
         "Your seeker profile created successfully"
@@ -105,7 +105,7 @@ def update_profile(background_tasks: BackgroundTasks,
     db.commit()
     background_tasks.add_task(
     create_notification,
-        db,
+        
         user["user_id"],
         "Profile Updated",
         "Your seeker profile updated successfully"
