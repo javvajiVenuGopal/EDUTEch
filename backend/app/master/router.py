@@ -45,7 +45,7 @@ def add_country(
     db.commit()
     background_tasks.add_task(
     create_notification,
-        db,
+        
         user["user_id"],
         "Country Added",
         f"{data.name} added successfully"
@@ -89,7 +89,7 @@ def delete_country(background_tasks: BackgroundTasks,
     db.commit()
     background_tasks.add_task(
     create_notification,
-        db,
+        
         user["user_id"],
         "Country Deleted",
         "Country removed successfully"
@@ -141,7 +141,7 @@ def update_state(background_tasks: BackgroundTasks,
     db.commit()
     background_tasks.add_task(
     create_notification,
-        db,
+        
         user["user_id"],
         "State Updated",
         f"{data.name} updated successfully"
@@ -194,7 +194,7 @@ def update_college(background_tasks: BackgroundTasks,
     db.commit()
     background_tasks.add_task(
     create_notification,
-        db,
+        
         user["user_id"],
         "College Updated",
         f"{data.name} updated successfully"
@@ -231,7 +231,7 @@ def update_branch(background_tasks: BackgroundTasks,
     db.commit()
     background_tasks.add_task(
     create_notification,
-        db,
+        
         user["user_id"],
         "Branch Updated",
         f"{data.name} updated successfully"
