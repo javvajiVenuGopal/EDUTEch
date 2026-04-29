@@ -1,61 +1,36 @@
 import smtplib
 from email.mime.text import MIMEText
 from email.message import EmailMessage
-from app.core.config import EMAIL_USER, EMAIL_PASS
+from app.core.config import SMTP_SERVER, SMTP_PORT
+EMAIL_USER, EMAIL_PASS="a9a310001@smtp-brevo.com","xsmtpsib-39d69c1f5a33b9e395e56a7caddd1bfdd6f10ee46cfb416009c9ccd4f050f330-xuEOV2lobQ1UwVma"
 
 
 # -------------------------
 # SEND OTP EMAIL
-# -------------------------
-
-
 def send_email(to_email: str, otp: str):
 
     try:
-        print("📧 send_email() started")
-        print("➡️ Receiver:", to_email)
-        print("➡️ Sender:", EMAIL_USER)
-        print("➡️ Password exists:", bool(EMAIL_PASS))
+        print("📧 Sending OTP via Brevo to:", to_email)
+        print("SMTP_SERVER:", SMTP_SERVER)
+        print("SMTP_PORT:", SMTP_PORT)
+        print("EMAIL_USER:", EMAIL_USER)
 
         msg = MIMEText(f"Your OTP is {otp}. Valid for 5 minutes.")
-        msg["Subject"] = "OTP Verification"
+        msg["Subject"] = "OTP Verification - SeniorGuide"
         msg["From"] = EMAIL_USER
         msg["To"] = to_email
 
-        print("🔌 Connecting to SMTP server...")
-
-        with smtplib.SMTP("smtp.gmail.com", 587, timeout=15) as server:
-
-            print("✅ SMTP connection created")
-
-            server.set_debuglevel(1)  # 👈 VERY IMPORTANT (shows SMTP conversation)
-
-            print("🔐 Starting TLS...")
+        with smtplib.SMTP(SMTP_SERVER, SMTP_PORT) as server:
             server.starttls()
-
-            print("🔑 Logging in...")
             server.login(EMAIL_USER, EMAIL_PASS)
-
-            print("📤 Sending message...")
             server.send_message(msg)
 
-            print("✅ OTP Email sent successfully")
-
+        print("✅ OTP Email sent successfully")
         return True
 
-    except smtplib.SMTPAuthenticationError as e:
-        print("❌ SMTP Authentication Error:", e)
-
-    except smtplib.SMTPConnectError as e:
-        print("❌ SMTP Connection Error:", e)
-
-    except smtplib.SMTPException as e:
-        print("❌ General SMTP Error:", e)
-
     except Exception as e:
-        print("❌ Unknown Email Error:", e)
-
-    return False
+        print("❌ Email error:", str(e))
+        return False
 
 # -------------------------
 # SEND REPORT EMAIL (PDF)
@@ -63,6 +38,8 @@ def send_email(to_email: str, otp: str):
 def send_report_email(to_email: str, file_path: str):
 
     try:
+        print("📧 Sending report email to:", to_email)
+
         msg = EmailMessage()
 
         msg["Subject"] = "Your College Consultation Report"
@@ -74,16 +51,14 @@ def send_report_email(to_email: str, file_path: str):
         )
 
         with open(file_path, "rb") as f:
-            file_data = f.read()
+            msg.add_attachment(
+                f.read(),
+                maintype="application",
+                subtype="pdf",
+                filename="report.pdf"
+            )
 
-        msg.add_attachment(
-            file_data,
-            maintype="application",
-            subtype="pdf",
-            filename="report.pdf"
-        )
-
-        with smtplib.SMTP("smtp.gmail.com", 587) as server:
+        with smtplib.SMTP(SMTP_SERVER, SMTP_PORT) as server:
             server.starttls()
             server.login(EMAIL_USER, EMAIL_PASS)
             server.send_message(msg)
@@ -92,7 +67,7 @@ def send_report_email(to_email: str, file_path: str):
         return True
 
     except Exception as e:
-        print("❌ Report email error:", e)
+        print("❌ Report email error:", str(e))
         return False
 
 
@@ -102,6 +77,8 @@ def send_report_email(to_email: str, file_path: str):
 def send_calendar_invite(to_email: str, ics_file: str):
 
     try:
+        print("📧 Sending calendar invite to:", to_email)
+
         msg = EmailMessage()
 
         msg["Subject"] = "Consultation Call Reminder"
@@ -120,7 +97,7 @@ def send_calendar_invite(to_email: str, ics_file: str):
                 filename="invite.ics"
             )
 
-        with smtplib.SMTP("smtp.gmail.com", 587) as server:
+        with smtplib.SMTP(SMTP_SERVER, SMTP_PORT) as server:
             server.starttls()
             server.login(EMAIL_USER, EMAIL_PASS)
             server.send_message(msg)
@@ -129,5 +106,5 @@ def send_calendar_invite(to_email: str, ics_file: str):
         return True
 
     except Exception as e:
-        print("❌ Calendar email error:", e)
+        print("❌ Calendar email error:", str(e))
         return False
