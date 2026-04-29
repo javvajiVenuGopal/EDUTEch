@@ -165,7 +165,7 @@ def apply_guide(
 
     background_tasks.add_task(
         create_notification,
-        db,
+        
         user["user_id"],
         "Application Submitted",
         "Your guide application submitted successfully"
@@ -280,7 +280,7 @@ def submit_test(
         # activation notification ONLY when passed
         background_tasks.add_task(
             create_notification,
-            db,
+            
             user["user_id"],
             "Guide Activated",
             "Congratulations! You are now an active senior guide"
@@ -352,7 +352,7 @@ def update_profile(  background_tasks: BackgroundTasks,
     db.commit()
     background_tasks.add_task(
     create_notification,
-        db,
+        
         user["user_id"],
         "Profile Updated",
         "Your guide profile updated successfully"
