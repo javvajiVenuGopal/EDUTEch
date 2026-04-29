@@ -104,7 +104,8 @@ def submit_feedback(
     # 🔔 notify seeker
     background_tasks.add_task(
         create_notification,
-        db,
+
+        
         booking.seeker_id,
         "College Feedback Submitted",
         "Guide submitted session feedback"
