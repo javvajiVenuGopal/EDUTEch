@@ -2,7 +2,7 @@ import smtplib
 from email.mime.text import MIMEText
 from email.message import EmailMessage
 from app.core.config import SMTP_SERVER, SMTP_PORT
-EMAIL_USER, EMAIL_PASS="a9a310001@smtp-brevo.com","xsmtpsib-39d69c1f5a33b9e395e56a7caddd1bfdd6f10ee46cfb416009c9ccd4f050f330-xuEOV2lobQ1UwVma"
+EMAIL_USER, EMAIL_PASS="a9a310001@smtp-brevo.com","xsmtpsib-39d69c1f5a33b9e395e56a7caddd1bfdd6f10ee46cfb416009c9ccd4f050f330-Q4K6XNWTzLLro6rD"
 import  requests
 
 
