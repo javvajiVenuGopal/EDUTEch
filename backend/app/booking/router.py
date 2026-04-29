@@ -118,7 +118,7 @@ def create_booking(
     db.refresh(booking)
     background_tasks.add_task(
     create_notification,
-        db,
+        
         user["user_id"],
         "Booking Created",
         "Your session booking request submitted"
@@ -281,7 +281,7 @@ def verify_payment(background_tasks: BackgroundTasks,
     # notify guide
     background_tasks.add_task(
         create_notification,
-            db,
+            
             guide.user_id,
             "New Booking Confirmed",
             f"A seeker booked your session (Booking ID: {booking.id})"
@@ -291,7 +291,7 @@ def verify_payment(background_tasks: BackgroundTasks,
     # notify seeker
     background_tasks.add_task(
         create_notification,
-            db,
+            
             booking.seeker_id,
             "Payment Successful",
             "Your session booking confirmed successfully"
@@ -328,7 +328,7 @@ def cancel_booking(background_tasks:BackgroundTasks,
 
     background_tasks.add_task(
         create_notification,
-            db,
+            
             booking.seeker_id,
             "Booking Cancelled",
             "Your booking cancelled successfully"
@@ -337,7 +337,7 @@ def cancel_booking(background_tasks:BackgroundTasks,
 
     background_tasks.add_task(
         create_notification,
-            db,
+            
             guide.user_id,
             "Session Cancelled",
             "A seeker cancelled the booking"
@@ -606,7 +606,7 @@ def process_refund(background_tasks:BackgroundTasks,
         db.commit()
         background_tasks.add_task(
         create_notification,
-            db,
+            
             booking.seeker_id,
             "Refund Approved",
             "Your payment refund completed successfully"
