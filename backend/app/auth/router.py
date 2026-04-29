@@ -83,12 +83,12 @@ def login(request: Request,background_tasks: BackgroundTasks, data: LoginSchema,
     user.otp_expiry = datetime.utcnow() + timedelta(minutes=5)
 
     db.commit()
-    background_tasks.add_task(
-        create_notification,
-        user.id,
-        "Login OTP Sent",
-        "OTP sent to your email for login"
-    )
+    # background_tasks.add_task(
+    #     create_notification,
+    #     user.id,
+    #     "Login OTP Sent",
+    #     "OTP sent to your email for login"
+    # )
     print("backgroundtask  login otps ")
     try:
         print("sending email")
