@@ -48,7 +48,7 @@ def register(request: Request,background_tasks: BackgroundTasks, data: RegisterS
     send_email(data.email, otp)
     background_tasks.add_task(
     create_notification,
-        db,
+        
         new_user.id,
         "OTP Sent",
         "Registration OTP sent to your email"
@@ -79,7 +79,7 @@ def login(request: Request,background_tasks: BackgroundTasks, data: LoginSchema,
     db.commit()
     background_tasks.add_task(
     create_notification,
-        db,
+        
         user.id,
         "Login OTP Sent",
         "OTP sent to your email for login"
@@ -150,7 +150,7 @@ def verify_otp(
     db.commit()
     background_tasks.add_task(
     create_notification,
-        db,
+        
         user.id,
         "Login Successful",
         "You logged in successfully"
@@ -196,7 +196,7 @@ def resend_otp(background_tasks: BackgroundTasks,email: str = Body(...), db: Ses
     
     background_tasks.add_task(
     create_notification,
-        db,
+        
         user.id,
         "OTP Resent",
         "A new OTP has been sent to your email"
