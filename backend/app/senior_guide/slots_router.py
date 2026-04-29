@@ -66,7 +66,7 @@ def add_slot(  background_tasks: BackgroundTasks,
     db.commit()
     background_tasks.add_task(
     create_notification,
-        db,
+        
         user["user_id"],
         "Slot Created",
         "Your availability slot added successfully"
@@ -156,7 +156,7 @@ def update_slot(  background_tasks: BackgroundTasks,
     db.commit()
     background_tasks.add_task(
     create_notification,
-        db,
+        
         user["user_id"],
         "Slot Updated",
         "Your slot updated successfully"
@@ -201,7 +201,7 @@ def delete_slot(  background_tasks: BackgroundTasks,
     db.commit()
     background_tasks.add_task(
     create_notification,
-        db,
+        
         user["user_id"],
         "Slot Deleted",
         "Your slot removed successfully"
