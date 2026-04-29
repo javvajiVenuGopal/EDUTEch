@@ -1,7 +1,7 @@
 import smtplib
 from email.mime.text import MIMEText
 from email.message import EmailMessage
-from app.core.config import SMTP_SERVER, SMTP_PORT,EMAIL_USER, EMAIL_PASS
+from app.core.config import SMTP_SERVER, SMTP_PORT,EMAIL_USER, EMAIL_PASS,BREVO_API_KEY
 import  requests
 
 
@@ -27,7 +27,7 @@ def send_email(to_email: str, otp: str):
 
         headers = {
             "accept": "application/json",
-            "api-key": EMAIL_PASS,
+            "api-key": BREVO_API_KEY,
             "content-type": "application/json"
         }
 
