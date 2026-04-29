@@ -5,33 +5,47 @@ from app.core.config import SMTP_SERVER, SMTP_PORT
 EMAIL_USER, EMAIL_PASS="a9a310001@smtp-brevo.com","xsmtpsib-39d69c1f5a33b9e395e56a7caddd1bfdd6f10ee46cfb416009c9ccd4f050f330-xuEOV2lobQ1UwVma"
 
 
-# -------------------------
-# SEND OTP EMAIL
+
+
 def send_email(to_email: str, otp: str):
 
     try:
-        print("📧 Sending OTP via Brevo to:", to_email)
-        print("SMTP_SERVER:", SMTP_SERVER)
-        print("SMTP_PORT:", SMTP_PORT)
-        print("EMAIL_USER:", EMAIL_USER)
+        print("📧 Sending OTP via Brevo API to:", to_email)
 
-        msg = MIMEText(f"Your OTP is {otp}. Valid for 5 minutes.")
-        msg["Subject"] = "OTP Verification - SeniorGuide"
-        msg["From"] = EMAIL_USER
-        msg["To"] = to_email
+        url = "https://api.brevo.com/v3/smtp/email"
 
-        with smtplib.SMTP(SMTP_SERVER, SMTP_PORT) as server:
-            server.starttls()
-            server.login(EMAIL_USER, EMAIL_PASS)
-            server.send_message(msg)
+        payload = {
+            "sender": {
+                "name": "SeniorGuide",
+                "email": EMAIL_USER
+            },
+            "to": [
+                {"email": to_email}
+            ],
+            "subject": "OTP Verification - SeniorGuide",
+            "htmlContent": f"<p>Your OTP is <b>{otp}</b>. Valid for 5 minutes.</p>"
+        }
 
-        print("✅ OTP Email sent successfully")
-        return True
+        headers = {
+            "accept": "application/json",
+            "api-key": EMAIL_PASS,
+            "content-type": "application/json"
+        }
+
+        response = requests.post(url, json=payload, headers=headers)
+
+        print("Brevo response:", response.status_code)
+
+        if response.status_code == 201:
+            print("✅ OTP Email sent successfully")
+            return True
+        else:
+            print("❌ Brevo error:", response.text)
+            return False
 
     except Exception as e:
-        print("❌ Email error:", str(e))
+        print("❌ Email API error:", e)
         return False
-
 # -------------------------
 # SEND REPORT EMAIL (PDF)
 # -------------------------
