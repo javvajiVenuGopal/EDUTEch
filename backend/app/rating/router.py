@@ -92,7 +92,7 @@ def submit_rating(  background_tasks: BackgroundTasks,
     
     background_tasks.add_task(
     create_notification,
-        db,
+        
         guide.user_id,
         "New Rating Received",
         f"You received a {data.rating}⭐ rating from a seeker"
