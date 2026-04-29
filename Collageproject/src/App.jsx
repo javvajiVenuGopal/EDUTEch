@@ -71,28 +71,31 @@ function App() {
   const navigate = useNavigate();
   useEffect(() => {
 
-    const interval = setInterval(() => {
-      axiosInstance.post("/auth/ping");
-    }, 60000);
+  const token = localStorage.getItem("token");
 
-    return () => clearInterval(interval);
+  if (!token) return;
 
-  }, []);
+  const interval = setInterval(() => {
+    axiosInstance.post("/auth/ping");
+  }, 60000);
+
+  return () => clearInterval(interval);
+
+}, []);
   
-  useEffect(() => {
+ useEffect(() => {
+
+  const token = localStorage.getItem("token");
+
+  if (!token) return;
 
   const socket = connectNotificationSocket((data) => {
 
     console.log("🔔 Notification:", data);
 
   });
-  
 
-  return () => {
-
-    closeNotificationSocket();
-
-  };
+  return () => closeNotificationSocket();
 
 }, []);
 
@@ -100,9 +103,10 @@ function App() {
 
 useEffect(() => {
 
+const token = localStorage.getItem("token");
 const userId = localStorage.getItem("user_id");
 
-if (!userId) return;
+if (!token || !userId) return;
 
 const socket = connectIncomingCallSocket(
 userId,
