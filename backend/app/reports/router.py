@@ -93,7 +93,7 @@ def generate_pdf_report(  background_tasks: BackgroundTasks,
         )
         background_tasks.add_task(
         create_notification,
-            db,
+            
             booking.seeker_id,
             "Report Ready",
             "Your consultation report is ready to download"
@@ -138,7 +138,7 @@ def download_report(  background_tasks: BackgroundTasks,
     
     background_tasks.add_task(
     create_notification,
-        db,
+        
         booking.seeker_id,
         "Report Downloaded",
         "You downloaded your consultation report"
@@ -240,7 +240,7 @@ def resend_report_email(  background_tasks: BackgroundTasks,
     send_report_email(seeker.email, file_path)
     background_tasks.add_task(
     create_notification,
-        db,
+        
         booking.seeker_id,
         "Report Email Sent",
         "Consultation report emailed successfully"
