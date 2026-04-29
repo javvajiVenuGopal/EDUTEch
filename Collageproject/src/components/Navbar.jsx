@@ -25,7 +25,9 @@ useEffect(() => {
   const loadUnread = async () => {
 
     try {
+ const token = localStorage.getItem("token");
 
+      if (!token) return;
       const res = await getUnreadCount();
 
       setUnreadCount(res.data.unread);
