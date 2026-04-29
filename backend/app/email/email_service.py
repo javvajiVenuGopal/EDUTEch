@@ -10,6 +10,7 @@ from app.core.config import EMAIL_USER, EMAIL_PASS
 def send_email(to_email: str, otp: str):
 
     try:
+        print("Sending OTP to:", to_email)
         msg = MIMEText(f"Your OTP is {otp}. Valid for 5 minutes.")
 
         msg["Subject"] = "OTP Verification"
