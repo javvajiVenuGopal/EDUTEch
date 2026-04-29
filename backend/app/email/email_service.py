@@ -7,28 +7,55 @@ from app.core.config import EMAIL_USER, EMAIL_PASS
 # -------------------------
 # SEND OTP EMAIL
 # -------------------------
+
+
 def send_email(to_email: str, otp: str):
 
     try:
-        print("Sending OTP to:", to_email)
-        msg = MIMEText(f"Your OTP is {otp}. Valid for 5 minutes.")
+        print("📧 send_email() started")
+        print("➡️ Receiver:", to_email)
+        print("➡️ Sender:", EMAIL_USER)
+        print("➡️ Password exists:", bool(EMAIL_PASS))
 
+        msg = MIMEText(f"Your OTP is {otp}. Valid for 5 minutes.")
         msg["Subject"] = "OTP Verification"
         msg["From"] = EMAIL_USER
         msg["To"] = to_email
 
-        with smtplib.SMTP("smtp.gmail.com", 587) as server:
+        print("🔌 Connecting to SMTP server...")
+
+        with smtplib.SMTP("smtp.gmail.com", 587, timeout=15) as server:
+
+            print("✅ SMTP connection created")
+
+            server.set_debuglevel(1)  # 👈 VERY IMPORTANT (shows SMTP conversation)
+
+            print("🔐 Starting TLS...")
             server.starttls()
+
+            print("🔑 Logging in...")
             server.login(EMAIL_USER, EMAIL_PASS)
+
+            print("📤 Sending message...")
             server.send_message(msg)
 
-        print("✅ OTP Email sent successfully")
+            print("✅ OTP Email sent successfully")
+
         return True
 
-    except Exception as e:
-        print("❌ Email error:", e)
-        return False
+    except smtplib.SMTPAuthenticationError as e:
+        print("❌ SMTP Authentication Error:", e)
 
+    except smtplib.SMTPConnectError as e:
+        print("❌ SMTP Connection Error:", e)
+
+    except smtplib.SMTPException as e:
+        print("❌ General SMTP Error:", e)
+
+    except Exception as e:
+        print("❌ Unknown Email Error:", e)
+
+    return False
 
 # -------------------------
 # SEND REPORT EMAIL (PDF)
