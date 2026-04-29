@@ -76,7 +76,7 @@ def create_slot(
     db.commit()
     background_tasks.add_task(
     create_notification,
-    db,
+    
     user["user_id"],
     "Slot Created",
     "Your availability slot created successfully"
@@ -178,7 +178,7 @@ def book_slot(
 # notify seeker
     background_tasks.add_task(
         create_notification,
-            db,
+            
             user["user_id"],
             "Slot Booked",
             "Your session slot booked successfully"
@@ -188,7 +188,7 @@ def book_slot(
     # notify guide
     background_tasks.add_task(
         create_notification,
-            db,
+            
             guide.user_id,
             "New Slot Booking",
             "A seeker booked your available slot"
@@ -240,7 +240,7 @@ def cancel_slot_booking(background_tasks:BackgroundTasks,
 # notify seeker
     background_tasks.add_task(
         create_notification,
-            db,
+            
             user["user_id"],
             "Slot Booking Cancelled",
             "Your booked slot cancelled successfully"
@@ -250,7 +250,7 @@ def cancel_slot_booking(background_tasks:BackgroundTasks,
     # notify guide
     background_tasks.add_task(
         create_notification,
-            db,
+            
             guide.user_id,
             "Booking Cancelled",
             "A seeker cancelled the booked slot"
@@ -311,7 +311,7 @@ def delete_slot(
     db.commit()
     background_tasks.add_task(
     create_notification,
-        db,
+        
         user["user_id"],
         "Slot Deleted",
         "Your availability slot removed successfully"
