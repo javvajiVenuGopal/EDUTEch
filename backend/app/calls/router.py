@@ -76,7 +76,7 @@ def create_call_session(background_tasks: BackgroundTasks,
     db.refresh(session)
     background_tasks.add_task(
     create_notification,
-        db,
+        
         booking.seeker_id,
         "Call Session Created",
         "Your call session has been prepared"
@@ -200,7 +200,7 @@ async def start_call(background_tasks: BackgroundTasks,
     # )
     background_tasks.add_task(
     create_notification,
-        db,
+        
         booking.seeker_id,
         "Call Started",
         "Your consultation call has started"
@@ -209,7 +209,7 @@ async def start_call(background_tasks: BackgroundTasks,
 
     background_tasks.add_task(
     create_notification,
-        db,
+        
         guide.user_id,
         "Call Started",
         "Consultation call started successfully"
@@ -265,7 +265,7 @@ async def end_call(
     # send notifications async-safe
     background_tasks.add_task(
         create_notification,
-        db,
+        
         booking.seeker_id,
         "Call Completed",
         "Your consultation session completed successfully"
@@ -274,7 +274,7 @@ async def end_call(
     if guide:
         background_tasks.add_task(
             create_notification,
-            db,
+            
             guide.user_id,
             "Session Completed",
             "Consultation session finished successfully"
@@ -331,7 +331,7 @@ def cancel_call(backgroundtasks:BackgroundTasks,
 
     backgroundtasks.add_task(
         create_notification,
-            db,
+            
             booking.seeker_id,
             "Call Cancelled",
             "Your consultation session has been cancelled"
@@ -340,7 +340,7 @@ def cancel_call(backgroundtasks:BackgroundTasks,
 
     backgroundtasks.add_task(
         create_notification,
-            db,
+            
             guide.user_id,
             "Session Cancelled",
             "Consultation session cancelled"
