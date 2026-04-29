@@ -57,13 +57,19 @@ def register(request: Request,background_tasks: BackgroundTasks, data: RegisterS
 
     return {"message": "OTP sent successfully"}
 
-
+def send_email_safe(email, otp):
+    try:
+        print("=====================Calling email sender...===================")
+        send_email(email, otp)
+    except Exception as e:
+        print("=====================EMAIL FAILED:=======================", e)
 # LOGIN
 @router.post("/login")
 @limiter.limit("5/minute")
 def login(request: Request,background_tasks: BackgroundTasks, data: LoginSchema, db: Session = Depends(get_db)):
 
     user = db.query(User).filter(User.email == data.email).first()
+    print("login enter")
 
     if not user:
         raise HTTPException(404, "User not found")
@@ -78,16 +84,16 @@ def login(request: Request,background_tasks: BackgroundTasks, data: LoginSchema,
 
     db.commit()
     background_tasks.add_task(
-    create_notification,
-        
+        create_notification,
         user.id,
         "Login OTP Sent",
         "OTP sent to your email for login"
-    
-)
+    )
+    print("backgroundtask  login otps ")
     try:
+        print("sending email")
         # ✅ IMPORTANT FIX
-        background_tasks.add_task(send_email, user.email, otp)
+        send_email_safe(user.email, otp)
      
        
     except Exception as e:
