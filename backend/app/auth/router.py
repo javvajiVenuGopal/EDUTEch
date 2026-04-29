@@ -85,8 +85,13 @@ def login(request: Request,background_tasks: BackgroundTasks, data: LoginSchema,
         "OTP sent to your email for login"
     
 )
-
-    send_email(user.email, otp)
+    try:
+        # ✅ IMPORTANT FIX
+        background_tasks.add_task(send_email, user.email, otp)
+     
+       
+    except Exception as e:
+        print("Email failed:", e)
 
     return {"message": "OTP sent for login"}
 
